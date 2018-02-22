@@ -1,0 +1,13 @@
+ecs-cli up \
+--image-id ami-74cbcb12 \
+--keypair alex \
+--size 1 \
+--security-group sg-3afe415e \
+--vpc vpc-677f3902 \
+--subnets subnet-7e2b001b,subnet-20451657 \
+--capability-iam \
+--instance-type t2.micro
+
+
+ecs-cli compose -p lb --file traefic.yml service up
+

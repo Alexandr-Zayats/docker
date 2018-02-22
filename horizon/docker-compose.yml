@@ -1,0 +1,52 @@
+version: '3.6'
+
+volumes:
+    db_data:
+
+services: 
+    db:
+        image: percona:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: "Hj32jhKH3ecd)9f"
+        stdin_open: true
+        volumes:
+            - db_data:/var/lib/mysql
+        tty: true
+#        ports:
+#            - 3306:3306/tcp
+
+    keystone:
+        image: registry.ciklum.net/arvini/keystone:latest
+        deploy:
+            placement:
+                constraints: [node.role != manager]
+        environment:
+            MYSQL_SERVICE_HOST: "db"
+            KEYSTONE_DB_NAME: "horizon"
+            KEYSTONE_DB_USER: "horizon"
+            KEYSTONE_DB_PASSWORD: "Sf,m.cmv907LKNFd"
+            MYSQL_ROOT_PASSWD: "Hj32jhKH3ecd)9f"
+        depends_on:
+            - db
+
+    horizon:
+        image: registry.ciklum.net/arvini/horizon:latest
+        deploy:
+            placement:
+                constraints: [node.role != manager]
+        ports:
+            - 8080:80
+        depends_on:
+            - keystone
+#        labels:
+#            traefik.port: 5001
+#            traefik.enable: 'true'
+#            traefik.docker.network: 'proxy_arvini'
+#            traefik.frontend.rule: "Host:app.int.pa.pp.ciklum.com"
+#            traefik.backend.loadbalancer.swarm: 'true'
+
+#networks:
+#  default:
+#    external:
+#      name: lb_multi-host-network
+

@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: comcbidz
+    volumes:
+      - "/data/MySQL/WEB:/var/lib/mysql"
+    deploy:
+      replicas: 1
+networks:
+  default:
+    external:
+      name: lb_multi-host-network

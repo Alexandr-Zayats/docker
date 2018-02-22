@@ -1,0 +1,43 @@
+version: '3'
+services:
+  fighting:
+    image: zayats/wordpress:latest
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_PASSWORD: L1f3r4y
+      WORDPRESS_DB_USER: wp_fighting.com.ua
+      WORDPRESS_ROOT_PASSWORD: comcbidz
+    volumes:
+      - /data/wordpress/fighting.com.ua:/var/www/html
+    deploy:
+      labels:
+        traefik.backend: "web_fighting.1" 
+        traefik.backend.loadbalancer.swarm: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: 'Host:fighting.com.ua'
+        traefik.port: '80'
+
+  korchma:
+    image: zayats/wordpress:latest
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_PASSWORD: L1f3r4y
+      WORDPRESS_DB_USER: wp_korchma.org
+      WORDPRESS_ROOT_PASSWORD: comcbidz
+    volumes:
+      - /data/wordpress/korchma.org:/var/www/html
+    deploy:
+      labels:
+        traefik.backend: "web_korchma.1"
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.backend.loadbalancer.swarm: 'true'
+        traefik.frontend.rule: 'Host:korchma.org'
+        traefik.port: '80'
+
+networks:
+  default:
+    external:
+      name: lb_multi-host-network
+

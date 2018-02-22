@@ -1,0 +1,30 @@
+version: '3'
+services:
+  nginx:
+    image: zayats/nginx
+    volumes:
+    - /data/web/rodnik.zayats.org:/var/www/html
+    - /data/cache/nginx/dsk:/etc/nginx/cache
+    deploy:
+      labels:
+        traefik.backend: "dsk_nginx.1"
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.backend.loadbalancer.swarm: 'true'
+        traefik.frontend.rule: 'Host:rodnik.zayats.org'
+        traefik.port: '80'
+  php:
+    image: zayats/php
+    environment:
+      ContainerType: service
+      MYSQL_DATABASE: dsk
+      MYSQL_HOST: db
+      MYSQL_PASSWORD: rodnik
+      MYSQL_ROOT_PASSWORD: comcbidz
+      MYSQL_USER: dsk
+    volumes:
+    - /data/web/rodnik.zayats.org:/var/www/html
+
+networks:
+  default:
+    external:
+      name: lb_multi-host-network

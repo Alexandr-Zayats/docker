@@ -1,0 +1,75 @@
+version: "3"
+services:
+  traefik:
+    image: traefik:latest
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+      mode: global
+      placement:
+        constraints: [node.role == manager]
+    environment:
+      - "AWS_ACCESS_KEY_ID=AKIAJYVKJ67F2PDDTDCA"
+      - "AWS_SECRET_ACCESS_KEY=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"
+      - "AWS_REGION=eu-west-1"
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    networks:
+      - backend
+      - consul-net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: |-
+      -c /dev/null
+      --web
+      --consul
+      --consul.endpoint=consul-cluster:8500
+      --consul.watch=true
+      --docker
+      --docker.domain=traefik
+      --docker.watch
+      --debug
+
+  consul-cluster:
+    image: consul:latest
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+      mode: global
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - 8500:8500
+    networks:
+      - consul-net
+    environment:
+      - 'CONSUL_BIND_INTERFACE=eth0'
+    command: agent -server -datacenter traefik -ui -retry-join=tasks.consul-cluster -retry-join=tasks.consul-cluster -retry-join=tasks.consul-cluster -bootstrap-expect=3 -client=0.0.0.0
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - 8081:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+    labels:
+      traefik.backend.loadbalancer.swarm: 'true'
+      traefik.frontend.rule: 'Host: swarm.zayats.org'
+      traefik.port: '8080'
+    networks:
+      - backend
+
+networks:
+  backend:
+      driver: overlay
+  consul-net:
+      driver: overlay
+

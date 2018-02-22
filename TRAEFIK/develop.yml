@@ -1,0 +1,14 @@
+version: '3'
+services:
+  dev:
+    image: zayats/dev:centos
+    ports:
+    - 8081:22
+    volumes:
+    - /data:/data
+    environment:
+      MYSQL_ROOT_PASSWORD: comcbidz
+networks:
+  default:
+    external:
+      name: lb_multi-host-network

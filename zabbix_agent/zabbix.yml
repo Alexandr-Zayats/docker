@@ -1,0 +1,19 @@
+version: '3.6'
+
+services:
+  zabbix-agent:
+    image: monitoringartist/dockbix-agent-xxl-limited:latest
+    deploy:
+      mode: global
+    ports:
+      - 10050:10050
+    environment:
+      ZA_Server: '194.105.144.242,zabbix.pp.ciklum.com,172.28.25.21'
+#      ZA_ServerActive: ''
+      ZA_StartAgents: 10
+      ZA_Timeout: 30
+    network_mode: "host"
+    volumes:
+      - /var/run:/var/run
+      - /:/rootfs:ro
+#      - /etc/localtime:/etc/localtime#

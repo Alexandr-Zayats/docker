@@ -1,0 +1,116 @@
+version: "3.4"
+
+services:
+  #############################
+  # ELASTICSEARCH MASTER NODE #
+  #############################
+  elastic-master:
+    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role != manager]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+    environment:
+      NODE_TYPE: 'master'
+    command: master
+    volumes:
+      - data:/usr/share/elasticsearch/data
+    networks:
+      - elk
+
+  ####################################
+  # ELASTICSEARCH CLIENT/INGEST NODE #
+  ####################################
+  elasticsearch:
+    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
+    ports:
+      - 9200:9200
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+#        order: stop-first
+      resources:
+        limits:
+          cpus: '2'
+          memory: '3G'
+        reservations:
+          cpus: '1'
+          memory: '2G'
+      placement:
+        constraints:
+          - node.hostname == minio-node2
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost"]
+#      interval: 1m30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 40s
+    depends_on:
+      - elastic-master
+    command: ingest
+    environment:
+      NODE_TYPE: 'ingest'
+    networks:
+      - elk
+
+  ###########################
+  # ELASTICSEARCH DATA NODE #
+  ###########################
+
+  elastic-data:
+    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role != manager]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+    command: data
+    environment:
+      ES_JAVA_OPTS: '-Xms2g -Xmx2g'
+      ES_HEAP_SIZE: 2g
+      NODE_TYPE: 'data'
+    volumes:
+      - data:/usr/share/elasticsearch/data
+    depends_on:
+      - elastic-master
+    networks:
+      - elk
+
+  ###############
+  # KIBANA NODE #
+  ###############
+  kibana:
+    image: registry.ciklum.net/elk/kibana:6.2.1-0.1
+    ports:
+      - 5601:5601
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+    networks:
+      - elk
+
+volumes:
+  data:
+
+networks:
+  elk:
+    driver: overlay

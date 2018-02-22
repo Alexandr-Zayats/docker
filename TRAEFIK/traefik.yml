@@ -1,0 +1,54 @@
+version: '3'
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+      - "80:80/tcp"
+      - "8080:8080/tcp"
+      - "443:443/tcp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [node.role == manager]
+      mode: global
+    command:
+      - --web
+      - --logLevel=DEBUG
+      - --docker
+      - --docker.watch
+      - --docker.swarmmode
+#      - --docker.exposedbydefault=true
+      - --docker.domain=pp.ciklum.con
+#      - --docker.endpoint=unix://var/run/docker.sock
+      - --acme
+      - --acme.storage=/acme.json
+      - --acme.email=alzay@ciklum.com
+      - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
+      - --acme.ondemand=true
+      - --acme.entryPoint=https
+      - --entryPoints=Name:http Address::80
+      - --entryPoints=Name:https Address::443 TLS
+      - --defaultentrypoints=http,https
+    networks:
+      - multi-host-network
+
+  visualizer:
+    image: dockersamples/visualizer:latest
+    ports:
+      - "8081:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - multi-host-network
+
+networks:
+  multi-host-network:
+    driver: overlay
