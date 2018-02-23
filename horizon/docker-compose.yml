@@ -1,43 +1,66 @@
-version: '3.6'
+version: '3.4'
 
 volumes:
-    db_data:
+    percona_data:
+        driver: local
 
 services: 
-    db:
-        image: percona:latest
-        environment:
-            MYSQL_ROOT_PASSWORD: "Hj32jhKH3ecd)9f"
-        stdin_open: true
-        volumes:
-            - db_data:/var/lib/mysql
-        tty: true
-#        ports:
-#            - 3306:3306/tcp
-
     keystone:
         image: registry.ciklum.net/arvini/keystone:latest
         deploy:
             placement:
                 constraints: [node.role != manager]
         environment:
-            MYSQL_SERVICE_HOST: "db"
-            KEYSTONE_DB_NAME: "horizon"
-            KEYSTONE_DB_USER: "horizon"
-            KEYSTONE_DB_PASSWORD: "Sf,m.cmv907LKNFd"
-            MYSQL_ROOT_PASSWD: "Hj32jhKH3ecd)9f"
+            OS_BOOTSTRAP_USERNAME: admin
+            OS_BOOTSTRAP_PASSWORD: keystone
+            OS_BOOTSTRAP_SERVICE_NAME: keystone
+            OS_BOOTSTRAP_REGION_ID: RegionOne
+            OS_BOOTSTRAP_ADMIN_URL: http://keystone:5000/v3
+            OS_BOOTSTRAP_PUBLIC_URL: http://keystone:5000/v3
+            OS_BOOTSTRAP_INTERNAL_URL: http://keystone:5000/v3
+            KEYSTONE_DATABASE_CONNECTION: mysql+pymysql://keystone:sd2324lgj_fjg;45KJLr!@keystone-database/keystone
+            KEYSTONE_CACHE_HOST: keystone-cache:11211
+        ports:
+            - 5000:5000
         depends_on:
-            - db
+            - keystone-database
+            - keystone-cache
+        restart: always
+        networks:
+            openstack:
+
+    keystone-cache:
+        image: memcached
+        networks:
+            openstack:
+
+    keystone-database:
+        image: percona
+        deploy:
+            placement:
+                constraints: [node.role != manager]
+        volumes:
+            - percona_data:/var/lib/mysql
+        environment:
+#            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: keystone
+            MYSQL_USER: keystone
+            MYSQL_PASSWORD: 'sd2324lgj_fjg;45KJLr!'
+            MYSQL_ROOT_PASSWORD: 'comcbidz'
+        networks:
+            openstack:
 
     horizon:
         image: registry.ciklum.net/arvini/horizon:latest
         deploy:
             placement:
-                constraints: [node.role != manager]
+                constraints: [node.role == manager]
         ports:
-            - 8080:80
+            - 8083:80
         depends_on:
             - keystone
+        networks:
+            openstack:
 #        labels:
 #            traefik.port: 5001
 #            traefik.enable: 'true'
@@ -45,8 +68,8 @@ services:
 #            traefik.frontend.rule: "Host:app.int.pa.pp.ciklum.com"
 #            traefik.backend.loadbalancer.swarm: 'true'
 
-#networks:
-#  default:
+networks:
+  openstack:
 #    external:
 #      name: lb_multi-host-network
 
