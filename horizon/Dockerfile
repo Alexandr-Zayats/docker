@@ -1,7 +1,7 @@
 FROM debian:stretch
 
 ENV HORIZON_BASEDIR=/opt/horizon \
-    KEYSTONE_URL='http://keystone:5000/v2' \
+    KEYSTONE_URL='http://keystone:5000/v3' \
     APACHE_RUN_USER=www-data \
     APACHE_RUN_GROUP=www-data \
     APACHE_PID_FILE=/var/run/apache2/apache2.pid \

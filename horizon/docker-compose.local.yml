@@ -1,0 +1,68 @@
+version: '2'
+
+volumes:
+    percona_data:
+        driver: local
+
+services: 
+    keystone:
+        image: registry.ciklum.net/arvini/keystone:latest
+        environment:
+            OS_BOOTSTRAP_USERNAME: admin
+            OS_BOOTSTRAP_PASSWORD: keystone
+            OS_BOOTSTRAP_SERVICE_NAME: keystone
+            OS_BOOTSTRAP_REGION_ID: RegionOne
+            OS_BOOTSTRAP_ADMIN_URL: http://keystone:5000/v3
+            OS_BOOTSTRAP_PUBLIC_URL: http://keystone:5000/v3
+            OS_BOOTSTRAP_INTERNAL_URL: http://keystone:5000/v3
+            KEYSTONE_DATABASE_CONNECTION: mysql+pymysql://keystone:sd2324lgj_fjg;45KJLr!@keystone-database/keystone
+            KEYSTONE_CACHE_HOST: keystone-cache:11211
+        ports:
+            - 5000:5000
+        depends_on:
+            - keystone-database
+            - keystone-cache
+        restart: always
+        networks:
+            openstack:
+
+    keystone-cache:
+        image: memcached
+        networks:
+            openstack:
+
+    keystone-database:
+        image: percona
+        volumes:
+            - percona_data:/var/lib/mysql
+#        ports:
+#            - 3306:3306
+        environment:
+#            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: keystone
+            MYSQL_USER: keystone
+            MYSQL_PASSWORD: 'sd2324lgj_fjg;45KJLr!'
+            MYSQL_ROOT_PASSWORD: 'comcbidz'
+        networks:
+            openstack:
+
+    horizon:
+        image: registry.ciklum.net/arvini/horizon:latest
+        ports:
+            - 8083:80
+        depends_on:
+            - keystone
+        networks:
+            openstack:
+#        labels:
+#            traefik.port: 5001
+#            traefik.enable: 'true'
+#            traefik.docker.network: 'proxy_arvini'
+#            traefik.frontend.rule: "Host:app.int.pa.pp.ciklum.com"
+#            traefik.backend.loadbalancer.swarm: 'true'
+
+networks:
+  openstack:
+#    external:
+#      name: lb_multi-host-network
+

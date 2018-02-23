@@ -1,45 +1,32 @@
 FROM alpine:3.7
 
-MAINTAINER Alexandr Zayats  <alzay@ciklum.com>
+ARG depends="py-pip mariadb-client-libs"
+ARG make_depends="build-base git libffi-dev linux-headers mariadb-dev python-dev"
+ARG repository="https://git.openstack.org/openstack/keystone.git"
+ARG tag="13.0.0.0rc1"
+# openssl-dev
 
-RUN addgroup -S keystone && adduser -S -G keystone keystone
+WORKDIR /opt/keystone
+#RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+RUN apk add --no-cache $depends\
+	&& apk add --no-cache $make_depends \
+	&& git clone $repository .\
+	&& git checkout -b $tag refs/tags/$tag\
+	&& pip install --no-cache-dir --upgrade pip\
+	&& pip install --no-cache-dir .\
+	&& pip install --no-cache-dir MySQL-python mysql-python mysqlclient crudini python-memcached PyMySQL uwsgi amqp==2.2.2 kombu>=4.0.3 pika==0.10\
+	&& mkdir -p /etc/keystone\
+	&& mv etc/* /etc/keystone/\
+#	&& mv /etc/keystone/keystone.conf.sample /etc/keystone/keystone.conf\
+	&& sed -i "s/ admin_token_auth / /" /etc/keystone/keystone-paste.ini\
+	&& apk del --no-cache $make_depends\
+	&& rm -rf /opt/keystone
+	
+ADD keystone.conf /etc/keystone/keystone.conf
+ADD docker-entrypoint.sh /usr/local/bin
 
-#ADD requirements.txt /tmp/requirements.txt
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-    && apk add --update --no-cache python bash mysql-client \
-	&& apk add --no-cache --virtual .fetch-deps \
-		git \
-		python-dev \
-        py-pip \
-        gcc \
-        musl-dev \
-		libc-dev \
-        libxml2-dev \
-        libxslt-dev \
-        libffi-dev \
-        openssl-dev \
-        g++ \
-        gfortran \
-        build-base \
-        freetype-dev \
-        libpng-dev \
-		linux-headers \
-        openblas-dev \
-	&& pip install netifaces --no-clean \
-	&& pip install git+https://github.com/openstack/keystone.git@13.0.0.0rc1 \
-	&& mkdir /tmp/lib \
-	&& cp -rf /usr/lib/lib* /tmp/lib/ \
-	&& apk del .fetch-deps \
-	&& mv /tmp/lib/* /usr/lib/
+CMD uwsgi --http :5000 --wsgi-file $(which keystone-wsgi-public)
 
-COPY docker-entrypoint.sh /entrypoint.sh
-COPY etc /etc/keystone/
-
-RUN chown -R keystone: /etc/keystone
-USER keystone
-
-ENTRYPOINT ["/entrypoint.sh"]
-EXPOSE 5000
-EXPOSE 35357
-CMD ["keystone-all"]
+EXPOSE 5000 35357
