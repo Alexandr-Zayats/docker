@@ -31,6 +31,9 @@ services:
 
     keystone-cache:
         image: memcached
+        deploy:
+            placement:
+                constraints: [node.role != manager]
         networks:
             openstack:
 
