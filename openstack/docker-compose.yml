@@ -44,6 +44,7 @@ services:
                 constraints: [node.role == manager]
         ports:
             - 8080:8080
+        command: ifconfig
         networks:
             openstack:
                 ipv4_address: 172.172.238.5
@@ -106,10 +107,13 @@ services:
 #            traefik.backend.loadbalancer.swarm: 'true'
 
 networks:
-  openstack:
-    driver: default
-      config:
-        - subnet: 172.172.238.0/24
-#    external:
-#      name: lb_multi-host-network
+    openstack:
+        driver: overlay
+        enable_ipv6: false
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.16.238.0/24
+#       external:
+#           name: lb_multi-host-network
 
