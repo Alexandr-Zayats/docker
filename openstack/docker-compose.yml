@@ -33,7 +33,8 @@ services:
         image: memcached
         deploy:
             placement:
-                constraints: [node.role != manager]
+                constraints:
+                    - node.hostname == minio-node2
         networks:
             openstack:
 
@@ -41,7 +42,8 @@ services:
         image: percona
         deploy:
             placement:
-                constraints: [node.role != manager]
+                constraints:
+                    - node.hostname == minio-node2
         volumes:
             - percona_data:/var/lib/mysql
         environment:
