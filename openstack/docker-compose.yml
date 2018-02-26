@@ -25,7 +25,6 @@ services:
         depends_on:
             - keystone-database
             - keystone-cache
-        restart: always
         networks:
             openstack:
 
