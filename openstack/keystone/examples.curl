@@ -1,0 +1,61 @@
+curl -i \
+  -H "Content-Type: application/json" \
+  -d '
+{ "auth": {
+    "identity": {
+      "methods": ["token"],
+      "token": {
+        "id": "'9a75f87f00116079c422'"
+      }
+    }
+  }
+}' \
+  "http://localhost:5000/v3/auth/tokens"
+
+
+curl -d '{"auth":{"passwordCredentials":{"username": "admin", "password": "keystone"}}}'  \
+-H "Content-type: application/json" \
+ http://localhost:5000/v3/tokens -v
+
+
+curl -i \
+  -H "Content-Type: application/json" \
+  -d '
+{ "auth": {
+    "identity": {
+      "methods": ["password"],
+      "password": {
+        "user": {
+          "name": "admin",
+          "domain": { "id": "keystone" },
+          "password": "keystone"
+        }
+      }
+    },
+    "scope": {
+      "project": {
+        "name": "horizon",
+        "domain": { "id": "keystone" }
+      }
+    }
+  }
+}' \
+  "http://localhoss:5000/v3/auth/tokens" 
+
+curl -i \
+  -H "Content-Type: application/json" \
+  -d '
+{ "auth": {
+    "identity": {
+      "methods": ["password"],
+      "password": {
+        "user": {
+          "name": "admin",
+          "domain": { "id": "default" },
+          "password": "keystone"
+        }
+      }
+    }
+  }
+}' \
+  "http://localhost:5000/v3/auth/tokens" ; echo

@@ -1,0 +1,11 @@
+# location of virtualenvwrapper.sh
+source /usr/bin/virtualenvwrapper.sh
+# directory to store virtual environments
+export WORKON_HOME=$HOME/.virtenvs
+
+#Create a new virtual environment.
+mkvirtualenv os_cli
+
+export OS_TOKEN=9a75f87f00116079c422
+export OS_IDENTITY_API_VERSION=3
+export OS_URL=http://keystone.openstack.int.pa.pp.ciklum.com/v3

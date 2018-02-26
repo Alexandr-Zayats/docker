@@ -1,0 +1,44 @@
+FROM alpine:3.7
+
+MAINTAINER Alexandr Zayats  <alzay@ciklum.com>
+
+RUN addgroup -S keystone && adduser -S -G keystone keystone
+
+#ADD requirements.txt /tmp/requirements.txt
+
+RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+    && apk add --update --no-cache python3 bash mysql-client \
+		py3-pip	\
+	&& apk add --no-cache --virtual .fetch-deps \
+		git \
+		python3-dev \
+        gcc \
+        musl-dev \
+		libc-dev \
+        libxml2-dev \
+        libxslt-dev \
+        libffi-dev \
+#        openssl-dev \
+        g++ \
+        gfortran \
+        build-base \
+        freetype-dev \
+        libpng-dev \
+		linux-headers \
+        openblas-dev \
+		mariadb-dev \
+#	&& pip3 install netifaces --no-clean \
+	&& pip3 install mysqlclient \
+	&& pip3 install git+https://github.com/openstack/keystone.git@13.0.0.0rc1 
+#	&& apk del .fetch-deps 
+
+COPY docker-entrypoint.sh.bkp /entrypoint.sh
+COPY etc /etc/keystone/
+
+RUN chown -R keystone: /etc/keystone
+USER keystone
+
+ENTRYPOINT ["/entrypoint.sh"]
+EXPOSE 5000
+EXPOSE 35357
+CMD ["keystone-all"]
