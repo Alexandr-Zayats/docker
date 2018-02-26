@@ -37,12 +37,45 @@ services:
         networks:
             openstack:
 
+    controller:
+        image: registry.ciklum.net/arvini/proxy:latest
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+        ports:
+            - 8080:8080
+        networks:
+            openstack:
+                ipv4_address: 172.172.238.5
+
+    storage1:
+        image:  registry.ciklum.net/arvini/storage:latest
+        deploy:
+            placement:
+                constraints: [node.role != manager]
+        command: ifconfig
+        networks:
+            openstack:
+                ipv4_address: 172.172.238.10
+
+    storage2:
+        image:  registry.ciklum.net/arvini/storage:latest
+        deploy:
+            placement:
+                constraints: [node.role != manager]
+        command: ifconfig
+        networks:
+            openstack:
+                ipv4_address: 172.172.238.20
+        
     keystone-database:
         image: percona
         deploy:
             placement:
                 constraints:
                     - node.hostname == minio-node2
+            mode: replicated
+            replicas: 2
         volumes:
             - percona_data:/var/lib/mysql
         environment:
@@ -74,6 +107,9 @@ services:
 
 networks:
   openstack:
+    driver: default
+      config:
+        - subnet: 172.172.238.0/24
 #    external:
 #      name: lb_multi-host-network
 
