@@ -49,19 +49,22 @@ services:
                 ipv4_address: 172.172.238.5
 
     storage1:
-        image:  registry.ciklum.net/arvini/storage:1239
+        image:  registry.ciklum.net/arvini/storage:1309
         deploy:
             placement:
                 constraints: [node.role != manager]
+                    - node.hostname == minio-node4
+                
         networks:
             openstack:
                 ipv4_address: 172.172.238.10
 
     storage2:
-        image:  registry.ciklum.net/arvini/storage:1239
+        image:  registry.ciklum.net/arvini/storage:1309
         deploy:
             placement:
                 constraints: [node.role != manager]
+                    - node.hostname == minio-node3
         networks:
             openstack:
                 ipv4_address: 172.172.238.20
@@ -111,7 +114,6 @@ networks:
             driver: default
             config:
                 - subnet: 172.16.238.0/24
-                  gateway: 172.16.238.1
 #       external:
 #           name: lb_multi-host-network
 
