@@ -44,6 +44,13 @@ services:
                 constraints: [node.role == manager]
         ports:
             - 8080:8080
+        entrypoint:
+        - ifconfig
+        - eth0
+        - 172.172.238.5
+        - netmask
+        - 255.255.255.0
+        - up
         networks:
             openstack:
                 ipv4_address: '172.172.238.5'
@@ -55,7 +62,13 @@ services:
                 constraints: 
                     - node.role != manager
                     - node.hostname == minio-node4
-                
+        entrypoint: 
+        - ifconfig
+        - eth0
+        - 172.172.238.10
+        - netmask
+        - 255.255.255.0
+        - up
         networks:
             openstack:
                 ipv4_address: '172.172.238.10'
@@ -67,6 +80,13 @@ services:
                 constraints: 
                     - node.role != manager
                     - node.hostname == minio-node3
+        entrypoint:
+        - ifconfig
+        - eth0
+        - 172.172.238.20
+        - netmask
+        - 255.255.255.0
+        - up
         networks:
             openstack:
                 ipv4_address: '172.172.238.20'
