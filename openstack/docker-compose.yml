@@ -46,7 +46,7 @@ services:
             - 8080:8080
         networks:
             openstack:
-                ipv4_address: 172.172.238.5
+                ipv4_address: '172.172.238.5'
 
     storage1:
         image:  registry.ciklum.net/arvini/storage:1309
@@ -58,7 +58,7 @@ services:
                 
         networks:
             openstack:
-                ipv4_address: 172.172.238.10
+                ipv4_address: '172.172.238.10'
 
     storage2:
         image:  registry.ciklum.net/arvini/storage:1309
@@ -69,7 +69,7 @@ services:
                     - node.hostname == minio-node3
         networks:
             openstack:
-                ipv4_address: 172.172.238.20
+                ipv4_address: '172.172.238.20'
         
     keystone-database:
         image: percona
