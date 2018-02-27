@@ -52,7 +52,8 @@ services:
         image:  registry.ciklum.net/arvini/storage:1309
         deploy:
             placement:
-                constraints: [node.role != manager]
+                constraints: 
+                    - node.role != manager
                     - node.hostname == minio-node4
                 
         networks:
@@ -63,7 +64,8 @@ services:
         image:  registry.ciklum.net/arvini/storage:1309
         deploy:
             placement:
-                constraints: [node.role != manager]
+                constraints: 
+                    - node.role != manager
                     - node.hostname == minio-node3
         networks:
             openstack:
