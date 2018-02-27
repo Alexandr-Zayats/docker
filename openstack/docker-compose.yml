@@ -106,7 +106,7 @@ services:
 networks:
     openstack:
         driver: overlay
-        enable_ipv6: false
+#        enable_ipv6: false
         ipam:
             driver: default
             config:
