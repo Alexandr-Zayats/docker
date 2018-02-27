@@ -50,7 +50,7 @@ services:
                 ipv4_address: 172.172.238.5
 
     storage1:
-        image:  registry.ciklum.net/arvini/storage:latest
+        image:  registry.ciklum.net/arvini/storage:1239
         deploy:
             placement:
                 constraints: [node.role != manager]
@@ -60,7 +60,7 @@ services:
                 ipv4_address: 172.172.238.10
 
     storage2:
-        image:  registry.ciklum.net/arvini/storage:latest
+        image:  registry.ciklum.net/arvini/storage:1239
         deploy:
             placement:
                 constraints: [node.role != manager]
@@ -76,7 +76,7 @@ services:
                 constraints:
                     - node.hostname == minio-node2
             mode: replicated
-            replicas: 2
+            replicas: 1
         volumes:
             - percona_data:/var/lib/mysql
         environment:
