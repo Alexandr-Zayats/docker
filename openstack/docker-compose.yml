@@ -51,6 +51,10 @@ services:
         - netmask
         - 255.255.255.0
         - up
+        - &&
+        - /usr/bin/swift-proxy-server
+        - /etc/swift/proxy-server.conf
+
         networks:
             openstack:
                 ipv4_address: '172.172.238.5'
@@ -69,6 +73,9 @@ services:
         - netmask
         - 255.255.255.0
         - up
+        - &&
+        - /usr/bin/swift-object-replicator 
+        - /etc/swift/object-server.conf
         networks:
             openstack:
                 ipv4_address: '172.172.238.10'
@@ -87,6 +94,9 @@ services:
         - netmask
         - 255.255.255.0
         - up
+        - &&
+        - /usr/bin/swift-object-replicator 
+        - /etc/swift/object-server.conf
         networks:
             openstack:
                 ipv4_address: '172.172.238.20'
