@@ -55,7 +55,8 @@ services:
                     - node.hostname == minio-node4
         networks:
             openstack:
-                ipv4_address: 172.16.238.20
+            storage:
+                ipv4_address: 172.16.238.13
 
     storage2:
         image:  registry.ciklum.net/arvini/storage:1309
@@ -66,7 +67,8 @@ services:
                     - node.hostname == minio-node3
         networks:
             openstack:
-                ipv4_address: 172.16.238.30
+            storage:
+                ipv4_address: 172.16.238.14
         
     keystone-database:
         image: percona
@@ -108,12 +110,16 @@ services:
 networks:
     openstack:
         driver: overlay
-#        enable_ipv6: false
         ipam:
             driver: default
             config:
-                - subnet: 172.16.238.0/24
-                - ip-range: 172.16.238.1/29
+                - subnet: 172.16.238.0/28
+    storage:
+        driver: overlay
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.16.238.12/30
 #       external:
 #           name: lb_multi-host-network
 
