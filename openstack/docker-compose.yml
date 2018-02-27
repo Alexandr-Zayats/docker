@@ -44,7 +44,6 @@ services:
                 constraints: [node.role == manager]
         ports:
             - 8080:8080
-        command: ifconfig
         networks:
             openstack:
                 ipv4_address: 172.172.238.5
@@ -54,7 +53,6 @@ services:
         deploy:
             placement:
                 constraints: [node.role != manager]
-        command: ifconfig
         networks:
             openstack:
                 ipv4_address: 172.172.238.10
@@ -64,7 +62,6 @@ services:
         deploy:
             placement:
                 constraints: [node.role != manager]
-        command: ifconfig
         networks:
             openstack:
                 ipv4_address: 172.172.238.20
@@ -114,6 +111,7 @@ networks:
             driver: default
             config:
                 - subnet: 172.16.238.0/24
+                  gateway: 172.16.238.1
 #       external:
 #           name: lb_multi-host-network
 
