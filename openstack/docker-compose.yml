@@ -42,11 +42,11 @@ services:
         deploy:
             placement:
                 constraints: [node.role == manager]
-        ports:
-            - "172.16.238.30:8080:8080"
+#        ports:
+#            - "172.16.238.50:8080:8080"
         networks:
             openstack:
-                ipv4_address: 172.16.238.30
+                ipv4_address: 172.16.238.50
 
     storage1:
         image:  registry.ciklum.net/arvini/storage:1309
@@ -55,11 +55,11 @@ services:
                 constraints: 
                     - node.role != manager
                     - node.hostname == minio-node4
-        ports:
-            - "172.16.238.31:6200"
+#        ports:
+#            - "172.16.238.20:6200:6200"
         networks:
             openstack:
-                ipv4_address: 172.16.238.31
+                ipv4_address: 172.16.238.20
 
     storage2:
         image:  registry.ciklum.net/arvini/storage:1309
@@ -68,11 +68,11 @@ services:
                 constraints: 
                     - node.role != manager
                     - node.hostname == minio-node3
-        ports:
-            - "172.16.238.32:6200"
+#        ports:
+#            - "172.16.238.30:6201:6200"
         networks:
             openstack:
-                ipv4_address: 172.16.238.32
+                ipv4_address: 172.16.238.30
         
     keystone-database:
         image: percona
@@ -119,6 +119,10 @@ networks:
             driver: default
             config:
                 - subnet: 172.16.238.0/24
+                  aux_addresses:
+                    controller: 172.16.238.50
+                    storage1: 172.16.238.20
+                    storage2: 172.16.238.30
 #       external:
 #           name: lb_multi-host-network
 
