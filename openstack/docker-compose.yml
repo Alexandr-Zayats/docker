@@ -1,8 +1,8 @@
 version: '3.4'
 
 volumes:
-#    percona_data:
-#        driver: rexray/csi-nfs
+    percona_data:
+        driver: local
     openstack:
         driver: rexray/csi-nfs
 
@@ -58,7 +58,7 @@ services:
             replicas: 2
         volumes:
             - type: volume
-              source: openstack/swift_config
+              source: openstack
               target: /etc/swift
               volume:
                 nocopy: false
@@ -76,7 +76,7 @@ services:
             mode: replicated
             replicas: 1
         volumes:
-            - openstack/db:/var/lib/mysql
+            - percona_data:/var/lib/mysql
         environment:
 #            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
             MYSQL_DATABASE: keystone
