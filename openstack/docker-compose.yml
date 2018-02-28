@@ -57,7 +57,7 @@ services:
             mode: replicated
             replicas: 2
         environment:
-            - affinity: container != "storage*"
+            - "affinity:container!=storage*"
         volumes:
             - type: volume
               source: openstack
