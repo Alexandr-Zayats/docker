@@ -40,16 +40,19 @@ services:
             openstack:
 
     controller:
-        image: registry.ciklum.net/arvini/proxy:latest
+        image: registry.ciklum.net/arvini/proxy:0228
         deploy:
             placement:
                 constraints: [node.role == manager]
+        volumes:
+            - openstack:/etc/swift/initial
+        command: /usr/bin/entrypoint
         networks:
             openstack:
                 ipv4_address: 172.16.238.50
 
     storage:
-        image: registry.ciklum.net/arvini/storage:02281630
+        image: registry.ciklum.net/arvini/storage:0228
         deploy:
             placement:
                 constraints: 
