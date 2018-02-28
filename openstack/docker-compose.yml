@@ -4,7 +4,7 @@ volumes:
     percona_data:
         driver: local
     openstack:
-        driver: rexray/csi-nfs
+        external: true
 
 services: 
     keystone:
@@ -49,20 +49,21 @@ services:
                 ipv4_address: 172.16.238.50
 
     storage:
-        image:  registry.ciklum.net/arvini/storage:1309
+        image: registry.ciklum.net/arvini/storage:02281330
         deploy:
             placement:
                 constraints: 
                     - node.role != manager
             mode: replicated
             replicas: 2
+        environment:
+            - affinity: container != "storage*"
         volumes:
             - type: volume
               source: openstack
-              target: /etc/swift
+              target: /etc/swift/initial
               volume:
                 nocopy: false
-
         networks:
             openstack:
 #                ipv4_address: 172.16.238.13
