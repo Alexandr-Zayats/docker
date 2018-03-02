@@ -40,12 +40,12 @@ services:
             openstack:
 
     controller:
-        image: registry.ciklum.net/arvini/controller:02031500
+        image: registry.ciklum.net/arvini/controller:02031800
         deploy:
             placement:
                 constraints: [node.role == manager]
-#        volumes:
-#            - openstack:/etc/swift/initial
+        volumes:
+            - openstack:/etc/swift/initial
         command: /usr/bin/entrypoint
         networks:
             openstack:
