@@ -52,7 +52,7 @@ services:
                 ipv4_address: 172.16.238.50
 
     storage:
-        image: registry.ciklum.net/arvini/storage:02031500
+        image: registry.ciklum.net/arvini/storage:02031800
         deploy:
             placement:
                 constraints: 
