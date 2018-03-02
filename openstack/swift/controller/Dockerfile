@@ -15,5 +15,6 @@ EXPOSE 8080
 
 ADD proxy-server.conf /etc/swift/proxy-server.conf
 ADD entrypoint.sh /usr/bin/entrypoint
+ADD swift.conf /etc/swift/swift.conf
 
 CMD ['/usr/bin/entrypoint']
