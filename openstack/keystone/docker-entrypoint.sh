@@ -12,8 +12,16 @@ then
     crudini --set $conf_path database memcache_servers $KEYSTONE_CACHE_MEMCACHE_SERVERS
 fi
 
+chown -R root:keystone /etc/keystone
+
 keystone-manage db_sync
 keystone-manage fernet_setup --keystone-user root --keystone-group root
-keystone-manage bootstrap
+keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
+#keystone-manage bootstrap
+keystone-manage bootstrap --bootstrap-password arvini \
+  --bootstrap-admin-url http://keystone:35357/v3/ \
+  --bootstrap-internal-url http://keystone:5000/v3/ \
+  --bootstrap-public-url http://keystone:5000/v3/ \
+  --bootstrap-region-id RegionOne
 
 exec "$@"

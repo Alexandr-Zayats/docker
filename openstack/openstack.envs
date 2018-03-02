@@ -10,7 +10,7 @@ export OS_TOKEN=9a75f87f00116079c422
 export OS_IDENTITY_API_VERSION=3
 export OS_URL=http://keystone.openstack.arvi.pp.ciklum.com/v3
 
-export OS_AUTH_URL=http://keystone.openstack.arvi.pp.ciklum.com/v2
+export OS_AUTH_URL=http://keystone:5000/v2
 export OS_USERNAME=swift
 export OS_PASSWORD=arvini
 export OS_TENANT_NAME=swift

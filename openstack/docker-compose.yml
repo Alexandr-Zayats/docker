@@ -8,7 +8,7 @@ volumes:
 
 services: 
     keystone:
-        image: registry.ciklum.net/arvini/keystone:latest
+        image: registry.ciklum.net/arvini/keystone:02032000
         deploy:
             placement:
                 constraints: [node.role != manager]
