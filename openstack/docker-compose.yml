@@ -14,7 +14,7 @@ services:
                 constraints: [node.role != manager]
         environment:
             OS_BOOTSTRAP_USERNAME: admin
-            OS_BOOTSTRAP_PASSWORD: keystone
+            OS_BOOTSTRAP_PASSWORD: arvini
             OS_BOOTSTRAP_SERVICE_NAME: keystone
             OS_BOOTSTRAP_REGION_ID: RegionOne
             OS_BOOTSTRAP_ADMIN_URL: http://keystone:5000/v3
@@ -40,19 +40,19 @@ services:
             openstack:
 
     controller:
-        image: registry.ciklum.net/arvini/proxy:0228
+        image: registry.ciklum.net/arvini/controller:02031500
         deploy:
             placement:
                 constraints: [node.role == manager]
-        volumes:
-            - openstack:/etc/swift/initial
+#        volumes:
+#            - openstack:/etc/swift/initial
         command: /usr/bin/entrypoint
         networks:
             openstack:
                 ipv4_address: 172.16.238.50
 
     storage:
-        image: registry.ciklum.net/arvini/storage:0228
+        image: registry.ciklum.net/arvini/storage:02031500
         deploy:
             placement:
                 constraints: 
