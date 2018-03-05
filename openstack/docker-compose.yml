@@ -5,6 +5,10 @@ volumes:
         driver: local
     openstack:
         external: true
+    storage_1:
+        driver: local
+    storage_2:
+        driver: local
 
 services: 
     keystone:
@@ -67,6 +71,9 @@ services:
               target: /etc/swift/initial
               volume:
                 nocopy: false
+            - storage_1:/srv/node/sdb
+            - storage_2:/srv/node/sdc
+
         command: /usr/bin/entrypoint
         networks:
             openstack:
@@ -92,7 +99,7 @@ services:
             openstack:
 
     horizon:
-        image: registry.ciklum.net/arvini/horizon:latest
+        image: registry.ciklum.net/arvini/horizon:05031400
         deploy:
             placement:
                 constraints: [node.role == manager]

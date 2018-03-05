@@ -1,18 +1,18 @@
 FROM alpine:3.7
 
-ARG depends="py-pip openssl"
+ARG depends="py-pip apache2 apache2-mod-wsgi openssl"
 ARG make_depends="build-base git libffi-dev linux-headers python-dev openssl-dev"
 ARG repository="https://git.openstack.org/openstack/horizon"
 ARG tag="stable/queens"
 
 ENV HORIZON_BASEDIR=/opt/horizon \
-    KEYSTONE_URL='http://keystone:5000/v3'
-#    APACHE_RUN_USER=www-data \
-#    APACHE_RUN_GROUP=www-data \
-#    APACHE_PID_FILE=/var/run/apache2/apache2.pid \
-#    APACHE_RUN_DIR=/var/run/apache2 \
-#    APACHE_LOCK_DIR=/var/lock/apache2 \
-#    APACHE_LOG_DIR=/var/log/apache2
+    KEYSTONE_URL='http://keystone:5000/v3' \
+    APACHE_RUN_USER=www-data \
+    APACHE_RUN_GROUP=www-data \
+    APACHE_PID_FILE=/var/run/apache2/apache2.pid \
+    APACHE_RUN_DIR=/var/run/apache2 \
+    APACHE_LOCK_DIR=/var/lock/apache2 \
+    APACHE_LOG_DIR=/var/log/apache2
 #    LANG=C 
 
 #WORKDIR /opt/horizon
@@ -28,7 +28,7 @@ RUN apk add --no-cache $depends \
     && pip install --no-cache-dir . \
 	&& pip install --no-cache-dir uwsgi \
 #	&& addgroup -S www-data \
-#    && adduser -D -S -h /opt/horizon -s /sbin/nologin -G www-data www-data \
+    && adduser -D -S -h /opt/horizon -s /sbin/nologin -G www-data www-data \
 	\
 	&& cp openstack_dashboard/local/local_settings.py.example openstack_dashboard/local/local_settings.py \
     && sed -i 's/^DEBUG.*/DEBUG = False/g' $HORIZON_BASEDIR/openstack_dashboard/local/local_settings.py \
@@ -39,19 +39,19 @@ RUN apk add --no-cache $depends \
     && ./manage.py collectstatic --noinput \
     && ./manage.py compress --force \
     && ./manage.py make_web_conf --wsgi \
-#    && ./manage.py make_web_conf --apache > /etc/apache2/conf.d/horizon.conf \
-#    && sed -i 's/<VirtualHost \*.*/<VirtualHost _default_:80>/g' /etc/apache2/conf.d/horizon.conf \
-#    && chown -R www-data:www-data ${HORIZON_BASEDIR} \
+    && ./manage.py make_web_conf --apache > /etc/apache2/conf.d/horizon.conf \
+    && sed -i 's/<VirtualHost \*.*/<VirtualHost _default_:80>/g' /etc/apache2/conf.d/horizon.conf \
+    && chown -R www-data:www-data ${HORIZON_BASEDIR} \
     && python -m compileall $HORIZON_BASEDIR \
-#    && sed -i '/ErrorLog/c\    ErrorLog \/dev\/stderr' /etc/apache2/conf.d/horizon.conf \
-#    && sed -i '/CustomLog/c\    CustomLog \/dev\/stdout combined' /etc/apache2/conf.d/horizon.conf \
-#    && sed -i '/ErrorLog/c\    ErrorLog \/dev\/stderr' /etc/apache2/httpd.conf \
-#	&& mkdir /run/apache2 \
+    && sed -i '/ErrorLog/c\    ErrorLog \/dev\/stderr' /etc/apache2/conf.d/horizon.conf \
+    && sed -i '/CustomLog/c\    CustomLog \/dev\/stdout combined' /etc/apache2/conf.d/horizon.conf \
+    && sed -i '/ErrorLog/c\    ErrorLog \/dev\/stderr' /etc/apache2/httpd.conf \
+	&& mkdir /run/apache2 \
 	&& ln -s /opt/horizon/static /static \
 	&& apk del --no-cache $make_depends
 
 EXPOSE 80
 #CMD /usr/sbin/httpd -DFOREGROUND
 
-CMD uwsgi --http :80 --uid root --gid root --wsgi-file /opt/horizon/openstack_dashboard/wsgi/horizon.wsgi
+CMD uwsgi --http :80 --wsgi-file /opt/horizon/openstack_dashboard/wsgi/horizon.wsgi
 
