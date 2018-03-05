@@ -52,7 +52,7 @@ services:
             openstack:
 
     controller:
-        image: registry.ciklum.net/arvini/controller:03051700
+        image: registry.ciklum.net/arvini/controller:03051730
         deploy:
             placement:
                 constraints: [node.role == manager]
