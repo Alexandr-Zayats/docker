@@ -107,7 +107,7 @@ services:
             openstack:
 
     horizon:
-        image: registry.ciklum.net/arvini/horizon:05031400
+        image: registry.ciklum.net/arvini/horizon:latest
         deploy:
             placement:
                 constraints: [node.role == manager]
