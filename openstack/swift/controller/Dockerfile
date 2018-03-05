@@ -3,6 +3,7 @@ FROM centos:latest
 RUN yum install -y https://www.rdoproject.org/repos/rdo-release.rpm \
     && yum -y update \
     && yum install -y \
+	net-tools \
 	openstack-swift-proxy \
 	python-swiftclient \
 	python-keystoneclient \
