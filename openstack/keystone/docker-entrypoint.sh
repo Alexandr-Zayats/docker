@@ -13,7 +13,7 @@ then
 fi
 
 chown -R root:keystone /etc/keystone
-
+sleep 20
 keystone-manage db_sync
 keystone-manage fernet_setup --keystone-user root --keystone-group root
 keystone-manage credential_setup --keystone-user keystone --keystone-group keystone

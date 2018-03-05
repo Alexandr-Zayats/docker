@@ -29,7 +29,7 @@ ADD keystone.conf /etc/keystone/keystone.conf
 ADD docker-entrypoint.sh /usr/local/bin
 
 ENTRYPOINT ["docker-entrypoint.sh"]
+EXPOSE 5000 35357
 
 CMD uwsgi --http :5000 --wsgi-file $(which keystone-wsgi-public)
 
-EXPOSE 5000 35357

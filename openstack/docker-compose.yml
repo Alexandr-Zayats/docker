@@ -12,20 +12,28 @@ volumes:
 
 services: 
     keystone:
-        image: registry.ciklum.net/arvini/keystone:02032000
+        image: registry.ciklum.net/arvini/keystone:05031500
         deploy:
             placement:
                 constraints: [node.role != manager]
         environment:
             OS_BOOTSTRAP_USERNAME: admin
             OS_BOOTSTRAP_PASSWORD: arvini
-            OS_BOOTSTRAP_SERVICE_NAME: keystone
+            OS_BOOTSTRAP_PROJECT_NAME: admin
+            OS_BOOTSTRAP_SERVICE_NAME: admin
             OS_BOOTSTRAP_REGION_ID: RegionOne
             OS_BOOTSTRAP_ADMIN_URL: http://keystone:5000/v3
             OS_BOOTSTRAP_PUBLIC_URL: http://keystone:5000/v3
             OS_BOOTSTRAP_INTERNAL_URL: http://keystone:5000/v3
             KEYSTONE_DATABASE_CONNECTION: mysql+pymysql://keystone:sd2324lgj_fjg;45KJLr!@keystone-database/keystone
             KEYSTONE_CACHE_HOST: keystone-cache:11211
+            OS_USERNAME=admin
+            OS_PASSWORD=arvini
+            OS_PROJECT_NAME=admin
+            OS_USER_DOMAIN_NAME=Default
+            OS_PROJECT_DOMAIN_NAME=Default
+            OS_AUTH_URL=http://keystone:5000/v3
+            OS_IDENTITY_API_VERSION=3
         ports:
             - 5000:5000
         depends_on:
@@ -84,7 +92,7 @@ services:
         deploy:
             placement:
                 constraints:
-                    - node.hostname == minio-node2
+                    - node.hostname == minio-manager
             mode: replicated
             replicas: 1
         volumes:
