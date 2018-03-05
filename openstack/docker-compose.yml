@@ -27,13 +27,13 @@ services:
             OS_BOOTSTRAP_INTERNAL_URL: http://keystone:5000/v3
             KEYSTONE_DATABASE_CONNECTION: mysql+pymysql://keystone:sd2324lgj_fjg;45KJLr!@keystone-database/keystone
             KEYSTONE_CACHE_HOST: keystone-cache:11211
-            OS_USERNAME=admin
-            OS_PASSWORD=arvini
-            OS_PROJECT_NAME=admin
-            OS_USER_DOMAIN_NAME=Default
-            OS_PROJECT_DOMAIN_NAME=Default
-            OS_AUTH_URL=http://keystone:5000/v3
-            OS_IDENTITY_API_VERSION=3
+            OS_USERNAME: admin
+            OS_PASSWORD: arvini
+            OS_PROJECT_NAME: admin
+            OS_USER_DOMAIN_NAME: Default
+            OS_PROJECT_DOMAIN_NAME: Default
+            OS_AUTH_URL: http://keystone:5000/v3
+            OS_IDENTITY_API_VERSION: 3
         ports:
             - 5000:5000
         depends_on:
