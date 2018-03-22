@@ -27,10 +27,16 @@ services:
   ####################################
   elasticsearch:
     image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
-    ports:
-      - 9200:9200
+#    ports:
+#      - 9200:9200
     deploy:
       replicas: 1
+      labels:
+        traefik.port: 9200
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:elastic.preprod.arvini.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
       update_config:
         parallelism: 2
         delay: 10s
@@ -94,8 +100,8 @@ services:
   ###############
   kibana:
     image: registry.ciklum.net/elk/kibana:6.2.1-0.1
-    ports:
-      - 5601:5601
+#    ports:
+#      - 5601:5601
     deploy:
       replicas: 1
       placement:
@@ -104,8 +110,15 @@ services:
         delay: 10s
         max_attempts: 10
         window: 60s
+      labels:
+        traefik.port: 5601
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:kibana.preprod.arvini.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
     networks:
-      - elk
+      lb_multi-host-network:
+      elk:
 
 volumes:
   data:
@@ -113,3 +126,6 @@ volumes:
 networks:
   elk:
     driver: overlay
+  lb_multi-host-network:
+    external: true
+
