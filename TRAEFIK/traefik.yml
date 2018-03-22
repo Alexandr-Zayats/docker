@@ -4,7 +4,6 @@ services:
     image: traefik:latest
     ports:
       - "80:80/tcp"
-      - "8000:8000/tcp" 
       - "8080:8080/tcp"
       - "443:443/tcp"
     volumes:
@@ -15,8 +14,8 @@ services:
       update_config:
         parallelism: 1
         delay: 10s
-      placement:
-        constraints: [node.role == manager]
+#      placement:
+#        constraints: [node.role == manager]
       mode: global
     command:
       - --web
@@ -26,7 +25,7 @@ services:
       - --docker.swarmmode
 #      - --docker.endpoint=tcp://10.26.16.116:2376
 #      - --docker.exposedbydefault=true
-      - --docker.domain=traefik
+      - --docker.domain=pp.ciklum.com
       - --api
 #      - --docker.endpoint=unix://var/run/docker.sock
 #      - --acme
