@@ -67,7 +67,8 @@ services:
     environment:
       NODE_TYPE: 'ingest'
     networks:
-      - elk
+      elk:
+      lb_multi-host-network:
 
   ###########################
   # ELASTICSEARCH DATA NODE #
