@@ -11,11 +11,12 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
     deploy:
+#      replicas: 1
       update_config:
         parallelism: 1
         delay: 10s
-#      placement:
-#        constraints: [node.role == manager]
+      placement:
+        constraints: [node.role == manager]
       mode: global
     command:
       - --web
@@ -24,9 +25,9 @@ services:
       - --docker.watch
       - --docker.swarmmode
 #      - --docker.endpoint=tcp://10.26.16.116:2376
-#      - --docker.exposedbydefault=true
+      - --docker.exposedbydefault=true
       - --docker.domain=pp.ciklum.com
-      - --api
+#      - --api
 #      - --docker.endpoint=unix://var/run/docker.sock
 #      - --acme
 #      - --acme.storage=/acme.json
@@ -34,9 +35,9 @@ services:
 #      - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
 #      - --acme.ondemand=true
 #      - --acme.entryPoint=https
-#      - --entryPoints=Name:http Address::80
-#      - --entryPoints=Name:https Address::443 TLS
-#      - --defaultentrypoints=http,https
+      - --entryPoints=Name:http Address::80
+      - --entryPoints=Name:https Address::443 TLS
+      - --defaultentrypoints=http,https
     networks:
       multi-host-network:
 
@@ -51,9 +52,10 @@ services:
       labels:
         traefik.port: 9000
         traefik.enable: 'true'
-        traefik.docker.network: 'multi-host-network'
+        traefik.docker.network: 'lb_multi-host-network'
         traefik.frontend.rule: "Host:swarm.preprod.arvini.pp.ciklum.com"
-        traefik.backend.loadbalancer.swarm: 'true' 
+        traefik.backend.loadbalancer.swarm: 'true'
+#        traefik.backend.loadbalancer.sticky: 'true'
     volumes:
       - type: bind
         source: /var/run/docker.sock
@@ -61,13 +63,18 @@ services:
       - type: volume
         source: portainer
         target: /data
-#    ports: 
-#      - 9000:9000
+    ports: 
+      - 9000:9000
     networks:
       multi-host-network:
 
 volumes:
   portainer:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: addr=10.26.16.132,nolock,soft,rw
+      device: ":/shared/portainer"
 
 networks:
   multi-host-network:

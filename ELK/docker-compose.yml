@@ -27,8 +27,8 @@ services:
   ####################################
   elasticsearch:
     image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
-#    ports:
-#      - 9200:9200
+    ports:
+      - 9200:9200
     deploy:
       replicas: 1
       labels:
@@ -94,15 +94,15 @@ services:
     depends_on:
       - elastic-master
     networks:
-      - elk
+      elk:
 
   ###############
   # KIBANA NODE #
   ###############
   kibana:
     image: registry.ciklum.net/elk/kibana:6.2.1-0.1
-#    ports:
-#      - 5601:5601
+    ports:
+      - 5601:5601
     deploy:
       replicas: 1
       placement:
