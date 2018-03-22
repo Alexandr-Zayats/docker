@@ -1,13 +1,16 @@
-version: '3'
+version: '3.5'
 services:
   traefik:
     image: traefik:latest
     ports:
       - "80:80/tcp"
+      - "8000:8000/tcp" 
       - "8080:8080/tcp"
       - "443:443/tcp"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
     deploy:
       update_config:
         parallelism: 1
@@ -21,31 +24,20 @@ services:
       - --docker
       - --docker.watch
       - --docker.swarmmode
+#      - --docker.endpoint=tcp://10.26.16.116:2376
 #      - --docker.exposedbydefault=true
-      - --docker.domain=pp.ciklum.con
+      - --docker.domain=traefik
+      - --api
 #      - --docker.endpoint=unix://var/run/docker.sock
-      - --acme
-      - --acme.storage=/acme.json
-      - --acme.email=alzay@ciklum.com
-      - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
-      - --acme.ondemand=true
-      - --acme.entryPoint=https
-      - --entryPoints=Name:http Address::80
-      - --entryPoints=Name:https Address::443 TLS
-      - --defaultentrypoints=http,https
-    networks:
-      - multi-host-network
-
-  visualizer:
-    image: dockersamples/visualizer:latest
-    ports:
-      - "8081:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
+#      - --acme
+#      - --acme.storage=/acme.json
+#      - --acme.email=alzay@ciklum.com
+#      - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
+#      - --acme.ondemand=true
+#      - --acme.entryPoint=https
+#      - --entryPoints=Name:http Address::80
+#      - --entryPoints=Name:https Address::443 TLS
+#      - --defaultentrypoints=http,https
     networks:
       - multi-host-network
 
