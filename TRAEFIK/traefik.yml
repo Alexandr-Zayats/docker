@@ -39,7 +39,36 @@ services:
 #      - --entryPoints=Name:https Address::443 TLS
 #      - --defaultentrypoints=http,https
     networks:
-      - multi-host-network
+      multi-host-network:
+
+  portainer:
+    image: portainer/portainer
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        traefik.port: 9000
+        traefik.enable: 'true'
+        traefik.docker.network: 'multi-host-network'
+        traefik.frontend.rule: "Host:swarm.preprod.arvini.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true' 
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - type: volume
+        source: portainer
+        target: /data
+#    ports: 
+#      - 9000:9000
+    networks:
+      multi-host-network:
+
+volumes:
+  portainer:
 
 networks:
   multi-host-network:
