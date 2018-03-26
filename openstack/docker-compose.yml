@@ -1,8 +1,6 @@
 version: '3.4'
 
 volumes:
-    percona_data:
-        driver: local
     openstack:
         external: true
     storage_1:
@@ -11,58 +9,6 @@ volumes:
         driver: local
 
 services: 
-    keystone:
-        image: registry.ciklum.net/arvini/keystone:05031500
-        deploy:
-            placement:
-                constraints: [node.role != manager]
-        environment:
-            OS_BOOTSTRAP_USERNAME: admin
-            OS_BOOTSTRAP_PASSWORD: arvini
-            OS_BOOTSTRAP_PROJECT_NAME: admin
-            OS_BOOTSTRAP_SERVICE_NAME: admin
-            OS_BOOTSTRAP_REGION_ID: RegionOne
-            OS_BOOTSTRAP_ADMIN_URL: http://keystone:5000/v3
-            OS_BOOTSTRAP_PUBLIC_URL: http://keystone:5000/v3
-            OS_BOOTSTRAP_INTERNAL_URL: http://keystone:5000/v3
-            KEYSTONE_DATABASE_CONNECTION: mysql+pymysql://keystone:sd2324lgj_fjg;45KJLr!@keystone-database/keystone
-            KEYSTONE_CACHE_HOST: keystone-cache:11211
-            OS_USERNAME: admin
-            OS_PASSWORD: arvini
-            OS_PROJECT_NAME: admin
-            OS_USER_DOMAIN_NAME: Default
-            OS_PROJECT_DOMAIN_NAME: Default
-            OS_AUTH_URL: http://keystone:5000/v3
-            OS_IDENTITY_API_VERSION: 3
-        ports:
-            - 5000:5000
-        depends_on:
-            - keystone-database
-            - keystone-cache
-        networks:
-            openstack:
-
-    keystone-cache:
-        image: memcached
-        deploy:
-            placement:
-                constraints:
-                    - node.hostname == minio-node2
-        networks:
-            openstack:
-
-    controller:
-        image: registry.ciklum.net/arvini/controller:03051800
-        deploy:
-            placement:
-                constraints: [node.role == manager]
-        volumes:
-            - openstack:/etc/swift/initial
-        command: /usr/bin/entrypoint
-        networks:
-            openstack:
-                ipv4_address: 172.16.238.50
-
     storage:
         image: registry.ciklum.net/arvini/storage:02031800
         deploy:
@@ -83,28 +29,11 @@ services:
             - storage_2:/srv/node/sdc
 
         command: /usr/bin/entrypoint
+        extra_hosts:
+            - "controller:172.28.27.40"
         networks:
             openstack:
 #                ipv4_address: 172.16.238.13
-
-    keystone-database:
-        image: percona
-        deploy:
-            placement:
-                constraints:
-                    - node.hostname == minio-manager
-            mode: replicated
-            replicas: 1
-        volumes:
-            - percona_data:/var/lib/mysql
-        environment:
-#            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-            MYSQL_DATABASE: keystone
-            MYSQL_USER: keystone
-            MYSQL_PASSWORD: 'sd2324lgj_fjg;45KJLr!'
-            MYSQL_ROOT_PASSWORD: 'comcbidz'
-        networks:
-            openstack:
 
     horizon:
         image: registry.ciklum.net/arvini/horizon:latest
@@ -113,8 +42,8 @@ services:
                 constraints: [node.role == manager]
         ports:
             - 8083:80
-        depends_on:
-            - keystone
+        extra_hosts:
+            - "controller:172.28.27.40"
         networks:
             openstack:
 #        labels:
