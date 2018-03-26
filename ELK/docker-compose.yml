@@ -5,7 +5,7 @@ services:
   # ELASTICSEARCH MASTER NODE #
   #############################
   elastic-master:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.1-2.0
+    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
     deploy:
       replicas: 1
       placement:
@@ -20,13 +20,13 @@ services:
     volumes:
       - data:/usr/share/elasticsearch/data
     networks:
-      elk-cluster
+      elk-cluster:
 
   ####################################
   # ELASTICSEARCH CLIENT/INGEST NODE #
   ####################################
   elastic-client:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.1-2.0
+    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
     ports:
       - 9200:9200
     deploy:
@@ -75,7 +75,7 @@ services:
   ###########################
 
   elastic-data:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.1-2.0
+    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
     deploy:
       replicas: 1
       placement:
@@ -128,7 +128,6 @@ volumes:
       type: "nfs"
       o: addr=172.28.27.15,nolock,soft,rw
       device: ":/shared/elk_data"
-
 
 networks:
   elk-cluster:

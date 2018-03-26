@@ -1,0 +1,112 @@
+version: '3.5'
+
+services:
+  elastic-master:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
+    container_name: elastic-master
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.elk == date]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 9200
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:elastic.int.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - date_master:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      elk-cluster:
+      lb_multi-host-network:
+
+  elastic-client:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
+    container_name: elastic-client
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+#        order: stop-first
+      resources:
+        limits:
+          cpus: '2'
+          memory: '3G'
+        reservations:
+          cpus: '1'
+          memory: '2G'
+      placement:
+        constraints: [node.labels.elk == true]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elastic-master"
+    depends_on:
+      - elastic-master
+    volumes:
+      - date_client:/usr/share/elasticsearch/data
+    networks:
+      elk-cluster:
+
+  kibana:
+    image: registry.ciklum.net/elk/kibana:6.2.1-0.2
+    ports:
+      - 5601:5601
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.elk == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5601
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:kibana.int.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+    networks:
+      lb_multi-host-network:
+      elk-cluster:
+
+volumes:
+  date_master:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: addr=172.28.27.15,nolock,soft,rw
+      device: ":/shared/pa/elk/master"
+  date_client:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: addr=172.28.27.15,nolock,soft,rw
+      device: "::/shared/pa/elk/client"
+
+networks:
+  elk-cluster:
+    driver: overlay
+  lb_multi-host-network:
+    external: true
+
