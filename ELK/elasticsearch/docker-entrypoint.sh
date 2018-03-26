@@ -33,7 +33,7 @@ if [ "$1" = 'master' -a "$(id -u)" = '0' ]; then
     sed -ri "s!^(\#\s*)?(node\.ingest:).*!\2 false!" $CONFIG
     sed -ri "s!^(\#\s*)?(node\.data:).*!\2 false!" $CONFIG
 
-	echo "node.name: [\"es-master-01\"]" >> $CONFIG
+	echo "node.name: [\"elastic-master\"]" >> $CONFIG
 	for path in \
 	    /usr/share/elasticsearch/data \
 	    /usr/share/elasticsearch/logs \
@@ -54,9 +54,9 @@ if [ "$1" = 'ingest' -a "$(id -u)" = '0' ]; then
 
 	# Set master.node's name
 	if ! grep -q "discovery.zen.ping.unicast.hosts" $CONFIG; then
-		echo "discovery.zen.ping.unicast.hosts: [\"es-master-01\", \"es-client-01\", \"es-data-01\"]" >> $CONFIG
+		echo "discovery.zen.ping.unicast.hosts: [\"elastic-master\", \"elastic-client\", \"elastic-data\"]" >> $CONFIG
 	fi
-	echo "node.name: [\"es-client-01\"]" >> $CONFIG
+	echo "node.name: [\"elastic-client\"]" >> $CONFIG
 	for path in \
         /usr/share/elasticsearch/data \
         /usr/share/elasticsearch/logs \
@@ -77,9 +77,9 @@ if [ "$1" = 'data' -a "$(id -u)" = '0' ]; then
 
 	# Set master.node's name
 	if ! grep -q "discovery.zen.ping.unicast.hosts" $CONFIG; then
-		echo "discovery.zen.ping.unicast.hosts: [\"es-master-01\", \"es-client-01\", \"es-data-01\"]" >> $CONFIG
+		echo "discovery.zen.ping.unicast.hosts: [\"elastic-masrter\", \"elastic-client\", \"elastic-data\"]" >> $CONFIG
 	fi
-	echo "node.name: [\"es-data-01\"]" >> $CONFIG
+	echo "node.name: [\"elastic-data\"]" >> $CONFIG
 	for path in \
         /usr/share/elasticsearch/data \
         /usr/share/elasticsearch/logs \

@@ -20,12 +20,12 @@ services:
     volumes:
       - data:/usr/share/elasticsearch/data
     networks:
-      - elk
+      elk-cluster
 
   ####################################
   # ELASTICSEARCH CLIENT/INGEST NODE #
   ####################################
-  elasticsearch:
+  elastic-client:
     image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
     ports:
       - 9200:9200
@@ -35,7 +35,7 @@ services:
         traefik.port: 9200
         traefik.enable: 'true'
         traefik.docker.network: 'lb_multi-host-network'
-        traefik.frontend.rule: "Host:elastic.preprod.arvini.pp.ciklum.com"
+        traefik.frontend.rule: "Host:elastic.int.pa.pp.ciklum.com"
         traefik.backend.loadbalancer.swarm: 'true'
       update_config:
         parallelism: 2
@@ -67,7 +67,7 @@ services:
     environment:
       NODE_TYPE: 'ingest'
     networks:
-      elk:
+      elk-cluster:
       lb_multi-host-network:
 
   ###########################
@@ -94,13 +94,13 @@ services:
     depends_on:
       - elastic-master
     networks:
-      elk:
+      elk-cluster:
 
   ###############
   # KIBANA NODE #
   ###############
   kibana:
-    image: registry.ciklum.net/elk/kibana:6.2.1-0.1
+    image: registry.ciklum.net/elk/kibana:6.2.1-0.2
     ports:
       - 5601:5601
     deploy:
@@ -115,17 +115,23 @@ services:
         traefik.port: 5601
         traefik.enable: 'true'
         traefik.docker.network: 'lb_multi-host-network'
-        traefik.frontend.rule: "Host:kibana.preprod.arvini.pp.ciklum.com"
+        traefik.frontend.rule: "Host:kibana.int.pa.pp.ciklum.com"
         traefik.backend.loadbalancer.swarm: 'true'
     networks:
       lb_multi-host-network:
-      elk:
+      elk-cluster:
 
 volumes:
   data:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: addr=172.28.27.15,nolock,soft,rw
+      device: ":/shared/elk_data"
+
 
 networks:
-  elk:
+  elk-cluster:
     driver: overlay
   lb_multi-host-network:
     external: true

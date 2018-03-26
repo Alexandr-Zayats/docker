@@ -37,8 +37,8 @@ RUN apk add --no-cache -t .build-deps wget ca-certificates gnupg openssl \
   && sed -ri "s!^(\#\s*)?(server\.host:).*!\2 '0.0.0.0'!" /usr/share/kibana/config/kibana.yml \
   && grep -q "^server\.host: '0.0.0.0'\$" /usr/share/kibana/config/kibana.yml \
   # ensure the default configuration is useful when using --link
-  && sed -ri "s!^(\#\s*)?(elasticsearch\.url:).*!\2 'http://elasticsearch:9200'!" /usr/share/kibana/config/kibana.yml \
-  && grep -q "^elasticsearch\.url: 'http://elasticsearch:9200'\$" /usr/share/kibana/config/kibana.yml \
+  && sed -ri "s!^(\#\s*)?(elasticsearch\.url:).*!\2 'http://elastic-client:9200'!" /usr/share/kibana/config/kibana.yml \
+  && grep -q "^elasticsearch\.url: 'http://elastic-client:9200'\$" /usr/share/kibana/config/kibana.yml \
   # usr alpine nodejs and not bundled version
   && bundled='NODE="${DIR}/node/bin/node"' \
   && apline_node='NODE="/usr/bin/node"' \
