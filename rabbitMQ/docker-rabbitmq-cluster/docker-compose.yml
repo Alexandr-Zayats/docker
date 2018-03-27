@@ -1,9 +1,9 @@
 version: '3.5'
 
 services:
-  master:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.1
-    hostname: master
+  management:
+    image: registry.ciklum.net/rabbitmq/rabbit:3.4
+    hostname: management
     environment:
       ERLANG_COOKIE: abcdefg
       RABBITMQ_DEFAULT_USER: arvi
@@ -23,7 +23,7 @@ services:
         traefik.port: 15672
         traefik.enable: 'true'
         traefik.docker.network: 'lb_multi-host-network'
-        traefik.frontend.rule: "Host:manager.rabbit.preprod.arvi.com"
+        traefik.frontend.rule: "Host:manager.rabbit.pa.pp.ciklum.com"
         traefik.backend.loadbalancer.swarm: 'true'
       update_config:
         parallelism: 2
@@ -32,14 +32,14 @@ services:
       rabbit:
       lb_multi-host-network:
 
-  rabbit1:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.1
-    hostname: rabbit1
+  node:
+    image: registry.ciklum.net/rabbitmq/rabbit:3.4
+    hostname: node
     depends_on:
-      - master
+      - management
     environment:
       ERLANG_COOKIE: abcdefg
-      CLUSTER_WITH: master
+      CLUSTER_WITH: management
       ENABLE_RAM: 'true'
       RABBITMQ_DEFAULT_USER: arvi
       RABBITMQ_DEFAULT_PASS: arvini12
@@ -47,7 +47,7 @@ services:
 #      - "5673:5672"
 #      - "15673:15672"
     deploy:
-      replicas: 1
+      replicas: 2
       placement:
         constraints: [node.labels.rabbit == true]
       restart_policy:
@@ -58,41 +58,7 @@ services:
         traefik.port: 5672
         traefik.enable: 'true'
         traefik.docker.network: 'lb_multi-host-network'
-        traefik.frontend.rule: "Host:rabbit.preprod.arvi.com"
-        traefik.backend.loadbalancer.swarm: 'true'
-      update_config:
-        parallelism: 2
-        delay: 10s
-    networks:
-      rabbit:
-      lb_multi-host-network:
-
-  rabbit2:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.1
-    hostname: rabbit2
-    depends_on:
-      - master
-      - rabbit1
-    environment:
-      ERLANG_COOKIE: abcdefg
-      CLUSTER_WITH: master
-      RABBITMQ_DEFAULT_USER: arvi
-      RABBITMQ_DEFAULT_PASS: arvini12
-#    ports:
-#      - "5674:5672"
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.labels.rabbit == true]
-      restart_policy:
-        delay: 10s
-        max_attempts: 10
-        window: 60s
-      labels:
-        traefik.port: 5672
-        traefik.enable: 'true'
-        traefik.docker.network: 'lb_multi-host-network'
-        traefik.frontend.rule: "Host:rabbit.preprod.arvi.com"
+        traefik.frontend.rule: "Host:rabbit.pa.pp.ciklum.com"
         traefik.backend.loadbalancer.swarm: 'true'
       update_config:
         parallelism: 2

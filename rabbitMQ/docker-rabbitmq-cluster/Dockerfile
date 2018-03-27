@@ -23,12 +23,15 @@ RUN set -eux; \
 	[ -s /usr/local/bin/rabbitmqadmin ]; \
 	chmod +x /usr/local/bin/rabbitmqadmin; \
 	apk add --no-cache python su-exec; \
+  mkdir -pv /var/log/rabbitmq; \
+  chown -R rabbitmq:rabbitmq /var/log/rabbitmq; \
+  for file in $(ls /opt/rabbitmq/sbin/); do ln -s /opt/rabbitmq/sbin/$file /usr/sbin/$file; done && \
 	rabbitmqadmin --version
 
 COPY rabbitmq-cluster /usr/local/bin/
 COPY pre-entrypoint.sh /
 COPY docker-entrypoint.sh /
 
-EXPOSE 5672 15672 25672 4369 9100 9101 9102 9103 9104 9105
+EXPOSE 5671 5672 15671 15672 25672 4369 9100 9101 9102 9103 9104 9105
 ENTRYPOINT ["/pre-entrypoint.sh"]
 CMD ["rabbitmq-cluster"]
