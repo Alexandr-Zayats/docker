@@ -1,0 +1,88 @@
+version: '3.5'
+
+services:
+
+  master:
+    image: registry.ciklum.net/rabbitmq/rabbit:1.0
+    hostname: rabbit1
+    environment:
+      - ERLANG_COOKIE=abcdefg
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.rabbit == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 15672
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:manager.rabbit.preprod.arvi.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+  rabbit1:
+    image: registry.ciklum.net/rabbitmq/rabbit:1.0
+    hostname: rabbit2
+    depends_on:
+      - master
+    environment:
+      - ERLANG_COOKIE=abcdefg
+      - CLUSTER_WITH=master
+      - ENABLE_RAM=true
+#    ports:
+#      - "5673:5672"
+#      - "15673:15672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.rabbit == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5672
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:rabbit.preprod.arvi.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+
+  rabbit2:
+    image: registry.ciklum.net/rabbitmq/rabbit:1.0
+    hostname: rabbit3
+    depends_on:
+      - master
+      - rabbit1
+    environment:
+      - ERLANG_COOKIE=abcdefg
+      - CLUSTER_WITH=master
+#    ports:
+#      - "5674:5672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.rabbit == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5672
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:rabbit.preprod.arvi.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
