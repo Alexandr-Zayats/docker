@@ -27,6 +27,9 @@ services:
       update_config:
         parallelism: 2
         delay: 10s
+    networks:
+      rabbit:
+
 
   rabbit1:
     image: registry.ciklum.net/rabbitmq/rabbit:1.0
@@ -57,6 +60,9 @@ services:
       update_config:
         parallelism: 2
         delay: 10s
+    networks:
+      rabbit:
+
 
   rabbit2:
     image: registry.ciklum.net/rabbitmq/rabbit:1.0
@@ -86,3 +92,9 @@ services:
       update_config:
         parallelism: 2
         delay: 10s
+    networks:
+      rabbit:
+
+networks:
+  rabbit:
+    driver: overlay
