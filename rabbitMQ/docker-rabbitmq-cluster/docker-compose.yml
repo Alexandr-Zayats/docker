@@ -3,7 +3,7 @@ version: '3.5'
 services:
 
   master:
-    image: registry.ciklum.net/rabbitmq/rabbit:1.0
+    image: registry.ciklum.net/rabbitmq/rabbit:2.0
     hostname: rabbit1
     environment:
       ERLANG_COOKIE: abcdefg
@@ -35,7 +35,7 @@ services:
 
 
   rabbit1:
-    image: registry.ciklum.net/rabbitmq/rabbit:1.0
+    image: registry.ciklum.net/rabbitmq/rabbit:2.0
     hostname: rabbit2
     depends_on:
       - master
@@ -71,7 +71,7 @@ services:
       lb_multi-host-network:
 
   rabbit2:
-    image: registry.ciklum.net/rabbitmq/rabbit:1.0
+    image: registry.ciklum.net/rabbitmq/rabbit:2.0
     hostname: rabbit3
     depends_on:
       - master
