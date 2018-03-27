@@ -6,7 +6,9 @@ services:
     image: registry.ciklum.net/rabbitmq/rabbit:1.0
     hostname: rabbit1
     environment:
-      - ERLANG_COOKIE=abcdefg
+      ERLANG_COOKIE: abcdefg
+      RABBITMQ_DEFAULT_USER: arvi
+      RABBITMQ_DEFAULT_PASS: arvini12
 #    ports:
 #      - "5672:5672"
 #      - "15672:15672"
@@ -29,6 +31,7 @@ services:
         delay: 10s
     networks:
       rabbit:
+      lb_multi-host-network:
 
 
   rabbit1:
@@ -37,9 +40,12 @@ services:
     depends_on:
       - master
     environment:
-      - ERLANG_COOKIE=abcdefg
-      - CLUSTER_WITH=master
-      - ENABLE_RAM=true
+      ERLANG_COOKIE: abcdefg
+      CLUSTER_WITH: master
+      ENABLE_RAM: true
+      RABBITMQ_DEFAULT_USER: arvi
+      RABBITMQ_DEFAULT_PASS: arvini12
+
 #    ports:
 #      - "5673:5672"
 #      - "15673:15672"
@@ -62,7 +68,7 @@ services:
         delay: 10s
     networks:
       rabbit:
-
+      lb_multi-host-network:
 
   rabbit2:
     image: registry.ciklum.net/rabbitmq/rabbit:1.0
@@ -71,8 +77,10 @@ services:
       - master
       - rabbit1
     environment:
-      - ERLANG_COOKIE=abcdefg
-      - CLUSTER_WITH=master
+      ERLANG_COOKIE: abcdefg
+      CLUSTER_WITH: master
+      RABBITMQ_DEFAULT_USER: arvi
+      RABBITMQ_DEFAULT_PASS: arvini12
 #    ports:
 #      - "5674:5672"
     deploy:
@@ -94,7 +102,10 @@ services:
         delay: 10s
     networks:
       rabbit:
+      lb_multi-host-network:
 
 networks:
   rabbit:
     driver: overlay
+  lb_multi-host-network:
+    external: true

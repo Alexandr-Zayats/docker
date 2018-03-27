@@ -1,5 +1,6 @@
-FROM rabbitmq:3.5.3-management
-MAINTAINER Dimitris Kapanidis dimitris.kapanidis@harbur.io
+#FROM rabbitmq:3.5.3-management
+FROM rabbitmq:3.7.4-management-alpine
+MAINTAINER Alexandr Zayats alzay@ciklum.com
 
 COPY rabbitmq-cluster /usr/local/bin/
 COPY pre-entrypoint.sh /
