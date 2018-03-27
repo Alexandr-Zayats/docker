@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   management:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.7
+    image: registry.ciklum.net/rabbitmq/rabbit:3.8
     hostname: management
     environment:
       RABBITMQ_ERLANG_COOKIE: abcdefg
@@ -33,7 +33,7 @@ services:
       lb_multi-host-network:
 
   node:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.7
+    image: registry.ciklum.net/rabbitmq/rabbit:3.8
 #    hostname: node
     depends_on:
       - management

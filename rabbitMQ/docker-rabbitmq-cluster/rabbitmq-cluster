@@ -23,6 +23,6 @@ else
   rabbitmqctl set_permissions -p / ${RABBITMQ_DEFAULT_USER} ".*" ".*" ".*"
 
   # Tail to keep the a foreground process active..
-  touch /var/log/rabbitmq/rabitmq.logs
+  touch /var/log/rabbitmq/rabbitmq.logs
   tail -f /var/log/rabbitmq/rabbitmq.logs
 fi
