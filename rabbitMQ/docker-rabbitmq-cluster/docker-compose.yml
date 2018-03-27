@@ -2,10 +2,10 @@ version: '3.5'
 
 services:
   management:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.4
+    image: registry.ciklum.net/rabbitmq/rabbit:3.5
     hostname: management
     environment:
-      ERLANG_COOKIE: abcdefg
+      RABBITMQ_ERLANG_COOKIE: abcdefg
       RABBITMQ_DEFAULT_USER: arvi
       RABBITMQ_DEFAULT_PASS: arvini12
 #    ports:
@@ -33,12 +33,12 @@ services:
       lb_multi-host-network:
 
   node:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.4
-    hostname: node
+    image: registry.ciklum.net/rabbitmq/rabbit:3.5
+#    hostname: node
     depends_on:
       - management
     environment:
-      ERLANG_COOKIE: abcdefg
+      RABBITMQ_ERLANG_COOKIE: abcdefg
       CLUSTER_WITH: management
       ENABLE_RAM: 'true'
       RABBITMQ_DEFAULT_USER: arvi

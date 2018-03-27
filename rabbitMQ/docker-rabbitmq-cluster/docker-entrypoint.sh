@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+mkdir -p /var/lib/rabbitmq
+
 if [ "$RABBITMQ_ERLANG_COOKIE" ]; then
 	cookieFile='/var/lib/rabbitmq/.erlang.cookie'
 	if [ -e "$cookieFile" ]; then
@@ -15,6 +17,8 @@ if [ "$RABBITMQ_ERLANG_COOKIE" ]; then
 		chown rabbitmq "$cookieFile"
 	fi
 fi
+
+chown rabbitmq:rabbitmq /var/lib/rabbitmq
 
 if [ "$1" = 'rabbitmq-server' ]; then
 	configs=(
@@ -57,7 +61,7 @@ if [ "$1" = 'rabbitmq-server' ]; then
 	fi
 
 	chown -R rabbitmq /var/lib/rabbitmq
-	set -- gosu rabbitmq "$@"
+	set -- su-exec rabbitmq "$@"
 fi
 
 exec "$@"
