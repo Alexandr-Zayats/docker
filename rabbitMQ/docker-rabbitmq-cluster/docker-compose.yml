@@ -1,7 +1,6 @@
 version: '3.5'
 
 services:
-
   master:
     image: registry.ciklum.net/rabbitmq/rabbit:2.0
     hostname: master
@@ -33,7 +32,6 @@ services:
       rabbit:
       lb_multi-host-network:
 
-
   rabbit1:
     image: registry.ciklum.net/rabbitmq/rabbit:2.0
     hostname: rabbit1
@@ -42,10 +40,9 @@ services:
     environment:
       ERLANG_COOKIE: abcdefg
       CLUSTER_WITH: master
-      ENABLE_RAM: true
+      ENABLE_RAM: 'true'
       RABBITMQ_DEFAULT_USER: arvi
       RABBITMQ_DEFAULT_PASS: arvini12
-
 #    ports:
 #      - "5673:5672"
 #      - "15673:15672"
