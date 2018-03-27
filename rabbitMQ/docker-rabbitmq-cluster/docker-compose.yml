@@ -4,7 +4,7 @@ services:
 
   master:
     image: registry.ciklum.net/rabbitmq/rabbit:2.0
-    hostname: rabbit1
+    hostname: master
     environment:
       ERLANG_COOKIE: abcdefg
       RABBITMQ_DEFAULT_USER: arvi
@@ -36,7 +36,7 @@ services:
 
   rabbit1:
     image: registry.ciklum.net/rabbitmq/rabbit:2.0
-    hostname: rabbit2
+    hostname: rabbit1
     depends_on:
       - master
     environment:
@@ -72,7 +72,7 @@ services:
 
   rabbit2:
     image: registry.ciklum.net/rabbitmq/rabbit:2.0
-    hostname: rabbit3
+    hostname: rabbit2
     depends_on:
       - master
       - rabbit1
