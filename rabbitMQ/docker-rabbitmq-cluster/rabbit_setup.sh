@@ -1,8 +1,8 @@
 #!/bin/bash
 
-rabbitmqctl stop_app
-rabbitmqctl reset
-rabbitmqctl start_app
+#rabbitmqctl stop_app
+#rabbitmqctl reset
+#rabbitmqctl start_app
 
 rabbitmqctl add_user integration_admin pa.@dmin2017.$$
 rabbitmqctl set_user_tags integration_admin administrator
