@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   management:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.8
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
     hostname: management
     environment:
       RABBITMQ_ERLANG_COOKIE: abcdefg
@@ -32,22 +32,22 @@ services:
       rabbit:
       lb_multi-host-network:
 
-  node:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.8
-#    hostname: node
+  dev:
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
+    hostname: PA_Integration_Virtual_Host_dev
     depends_on:
       - management
     environment:
       RABBITMQ_ERLANG_COOKIE: abcdefg
       CLUSTER_WITH: management
-      ENABLE_RAM: 'true'
+#      ENABLE_RAM: 'true'
       RABBITMQ_DEFAULT_USER: arvi
       RABBITMQ_DEFAULT_PASS: arvini12
 #    ports:
 #      - "5673:5672"
 #      - "15673:15672"
     deploy:
-      replicas: 2
+      replicas: 1
       placement:
         constraints: [node.labels.rabbit == true]
       restart_policy:
@@ -58,7 +58,147 @@ services:
         traefik.port: 5672
         traefik.enable: 'true'
         traefik.docker.network: 'lb_multi-host-network'
-        traefik.frontend.rule: "Host:rabbit.pa.pp.ciklum.com"
+        traefik.frontend.rule: "Host:dev.rabbit.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+    networks:
+      rabbit:
+      lb_multi-host-network:
+
+  int:
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    hostname: PA_Integration_Virtual_Host_int
+    depends_on:
+      - management
+    environment:
+      RABBITMQ_ERLANG_COOKIE: abcdefg
+      CLUSTER_WITH: management
+#      ENABLE_RAM: 'true'
+      RABBITMQ_DEFAULT_USER: arvi
+      RABBITMQ_DEFAULT_PASS: arvini12
+#    ports:
+#      - "5673:5672"
+#      - "15673:15672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.rabbit == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5672
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:int.rabbit.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+    networks:
+      rabbit:
+      lb_multi-host-network:
+
+  qa:
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    hostname: PA_Integration_Virtual_Host_qa
+    depends_on:
+      - management
+    environment:
+      RABBITMQ_ERLANG_COOKIE: abcdefg
+      CLUSTER_WITH: management
+#      ENABLE_RAM: 'true'
+      RABBITMQ_DEFAULT_USER: arvi
+      RABBITMQ_DEFAULT_PASS: arvini12
+#    ports:
+#      - "5673:5672"
+#      - "15673:15672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.rabbit == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5672
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:qa.rabbit.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+    networks:
+      rabbit:
+      lb_multi-host-network:
+
+  prod:
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    hostname: PA_Integration_Virtual_Host_prod
+    depends_on:
+      - management
+    environment:
+      RABBITMQ_ERLANG_COOKIE: abcdefg
+      CLUSTER_WITH: management
+#      ENABLE_RAM: 'true'
+      RABBITMQ_DEFAULT_USER: arvi
+      RABBITMQ_DEFAULT_PASS: arvini12
+#    ports:
+#      - "5673:5672"
+#      - "15673:15672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.rabbit == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5672
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:prod.rabbit.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+    networks:
+      rabbit:
+      lb_multi-host-network:
+
+  stage:
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    hostname: PA_Integration_Virtual_Host_stage
+    depends_on:
+      - management
+    environment:
+      RABBITMQ_ERLANG_COOKIE: abcdefg
+      CLUSTER_WITH: management
+#      ENABLE_RAM: 'true'
+      RABBITMQ_DEFAULT_USER: arvi
+      RABBITMQ_DEFAULT_PASS: arvini12
+#    ports:
+#      - "5673:5672"
+#      - "15673:15672"
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.rabbit == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5672
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:stage.rabbit.pa.pp.ciklum.com"
         traefik.backend.loadbalancer.swarm: 'true'
       update_config:
         parallelism: 2
