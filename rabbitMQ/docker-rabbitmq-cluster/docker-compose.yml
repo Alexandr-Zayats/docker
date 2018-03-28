@@ -68,7 +68,7 @@ services:
       lb_multi-host-network:
 
   int:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
     hostname: PA_Integration_Virtual_Host_int
     depends_on:
       - management
@@ -103,7 +103,7 @@ services:
       lb_multi-host-network:
 
   qa:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
     hostname: PA_Integration_Virtual_Host_qa
     depends_on:
       - management
@@ -138,7 +138,7 @@ services:
       lb_multi-host-network:
 
   prod:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
     hostname: PA_Integration_Virtual_Host_prod
     depends_on:
       - management
@@ -173,7 +173,7 @@ services:
       lb_multi-host-network:
 
   stage:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
     hostname: PA_Integration_Virtual_Host_stage
     depends_on:
       - management
