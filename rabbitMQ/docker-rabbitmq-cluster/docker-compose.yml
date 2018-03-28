@@ -32,9 +32,9 @@ services:
       rabbit:
       lb_multi-host-network:
 
-  dev:
+  PA_Integration_Virtual_Host_Dev:
     image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
-    hostname: PA_Integration_Virtual_Host_dev
+    hostname: PA_Integration_Virtual_Host_Dev
     depends_on:
       - management
     environment:
@@ -67,9 +67,9 @@ services:
       rabbit:
       lb_multi-host-network:
 
-  int:
+  PA_Integration_Virtual_Host_Int:
     image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
-    hostname: PA_Integration_Virtual_Host_int
+    hostname: PA_Integration_Virtual_Host_Int
     depends_on:
       - management
     environment:
@@ -102,9 +102,9 @@ services:
       rabbit:
       lb_multi-host-network:
 
-  qa:
+  PA_Integration_Virtual_Host_Qa:
     image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
-    hostname: PA_Integration_Virtual_Host_qa
+    hostname: PA_Integration_Virtual_Host_Qa
     depends_on:
       - management
     environment:
@@ -137,9 +137,9 @@ services:
       rabbit:
       lb_multi-host-network:
 
-  prod:
+  PA_Integration_Virtual_Host_Prod:
     image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
-    hostname: PA_Integration_Virtual_Host_prod
+    hostname: PA_Integration_Virtual_Host_Prod
     depends_on:
       - management
     environment:
@@ -172,9 +172,9 @@ services:
       rabbit:
       lb_multi-host-network:
 
-  stage:
+  PA_Integration_Virtual_Host_Stage:
     image: registry.ciklum.net/rabbitmq/rabbit:3.9.1
-    hostname: PA_Integration_Virtual_Host_stage
+    hostname: PA_Integration_Virtual_Host_Stage
     depends_on:
       - management
     environment:
