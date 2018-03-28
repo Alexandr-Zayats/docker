@@ -183,7 +183,7 @@ services:
     hostname: PA_Integration_Virtual_Host_Stage
     depends_on:
       - management
-      - PA_Integration_Virtual_Host_Dev
+      - PA_Integration_Virtual_Host_Prod
       - PA_Integration_Virtual_Host_Qa
       - PA_Integration_Virtual_Host_Int
       - PA_Integration_Virtual_Host_Dev
