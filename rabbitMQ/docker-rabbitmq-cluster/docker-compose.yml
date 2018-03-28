@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   management:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9.2
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.3
     hostname: management
     environment:
       RABBITMQ_ERLANG_COOKIE: abcdefg
@@ -33,7 +33,7 @@ services:
       lb_multi-host-network:
 
   PA_Integration_Virtual_Host_Dev:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9.2
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.3
     hostname: PA_Integration_Virtual_Host_Dev
     depends_on:
       - management
@@ -68,7 +68,7 @@ services:
       lb_multi-host-network:
 
   PA_Integration_Virtual_Host_Int:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9.2
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.3
     hostname: PA_Integration_Virtual_Host_Int
     depends_on:
       - management
@@ -104,7 +104,7 @@ services:
       lb_multi-host-network:
 
   PA_Integration_Virtual_Host_Qa:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9.2
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.3
     hostname: PA_Integration_Virtual_Host_Qa
     depends_on:
       - management
@@ -141,7 +141,7 @@ services:
       lb_multi-host-network:
 
   PA_Integration_Virtual_Host_Prod:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9.2
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.3
     hostname: PA_Integration_Virtual_Host_Prod
     depends_on:
       - management
@@ -179,7 +179,7 @@ services:
       lb_multi-host-network:
 
   PA_Integration_Virtual_Host_Stage:
-    image: registry.ciklum.net/rabbitmq/rabbit:3.9.2
+    image: registry.ciklum.net/rabbitmq/rabbit:3.9.3
     hostname: PA_Integration_Virtual_Host_Stage
     depends_on:
       - management
