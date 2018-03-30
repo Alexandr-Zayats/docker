@@ -11,12 +11,6 @@ services:
         delay: 10s
         max_attempts: 10
         window: 60s
-      labels:
-        traefik.port: 9200
-        traefik.enable: 'true'
-        traefik.docker.network: 'lb_multi-host-network'
-        traefik.frontend.rule: "Host:elastic.int.pa.pp.ciklum.com"
-        traefik.backend.loadbalancer.swarm: 'true'
       update_config:
         parallelism: 2
         delay: 10s
@@ -35,7 +29,7 @@ services:
   elastic-client:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
     deploy:
-      replicas: 1
+      replicas: 2
       update_config:
         parallelism: 2
         delay: 10s
@@ -54,6 +48,12 @@ services:
         delay: 10s
         max_attempts: 10
         window: 60s
+      labels:
+        traefik.port: 9200
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:elastic.int.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
     environment:
       - cluster.name=docker-cluster
 #      - bootstrap.memory_lock=true

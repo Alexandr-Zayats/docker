@@ -63,8 +63,8 @@ services:
       - type: volume
         source: portainer
         target: /data
-    ports: 
-      - 9000:9000
+#    ports: 
+#      - 9000:9000
     networks:
       multi-host-network:
 
