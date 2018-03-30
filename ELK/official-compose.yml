@@ -24,7 +24,6 @@ services:
 #      - 9200:9200
     networks:
       elk-cluster:
-      lb_multi-host-network:
 
   elastic-client:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
@@ -65,6 +64,7 @@ services:
       - date_client:/usr/share/elasticsearch/data
     networks:
       elk-cluster:
+      lb_multi-host-network:
 
   kibana:
     image: registry.ciklum.net/elk/kibana:6.2.3-1
