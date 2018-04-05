@@ -1,34 +1,75 @@
 version: "3.5"
 
 services:
-  #############################
-  # ELASTICSEARCH MASTER NODE #
-  #############################
   elastic-master:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
+    image: registry.ciklum.net/elk/elasticsearch:6.2.3
+    hostname: elastic-master
     deploy:
       replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+#        order: start-first
+#      resources:
+#        limits:
+#          cpus: '2'
+#          memory: '4G'
+#        reservations:
+#          cpus: '0.5'
+#          memory: '1G'
       placement:
         constraints: [node.labels.elk == true]
       restart_policy:
+        condition: on-failure
         delay: 10s
         max_attempts: 10
         window: 60s
     environment:
-      NODE_TYPE: 'master'
-    command: master
+      CLUSTER_NAME: 'integration'
+      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+      ES_HEAP_SIZE: '2g'
+      MAX_LOCKED_MEMORY: 'unlimited'
     volumes:
-      - data:/usr/share/elasticsearch/data
+      - master:/usr/share/elasticsearch/data
     networks:
       elk-cluster:
 
-  ####################################
-  # ELASTICSEARCH CLIENT/INGEST NODE #
-  ####################################
-  elastic-client:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
-    ports:
-      - 9200:9200
+  elastic-data:
+    image: registry.ciklum.net/elk/elasticsearch:6.2.3
+    hostname: elastic-data
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+#        order: start-first
+#      resources:
+#        limits:
+#          cpus: '2'
+#          memory: '4G'
+#        reservations:
+#          cpus: '0.5'
+#          memory: '1G'
+      placement:
+        constraints: [node.labels.elk == true]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+    environment:
+      CLUSTER_NAME: 'integration'
+      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+      ES_HEAP_SIZE: '2g'
+      MAX_LOCKED_MEMORY: 'unlimited'
+    volumes:
+      - data1:/usr/share/elasticsearch/data
+    networks:
+      elk-cluster:
+
+  elasticsearch:
+    image: registry.ciklum.net/elk/elasticsearch:6.2.3
+    hostname: elasticsearch
     deploy:
       replicas: 1
       labels:
@@ -41,13 +82,13 @@ services:
         parallelism: 2
         delay: 10s
 #        order: stop-first
-      resources:
-        limits:
-          cpus: '2'
-          memory: '3G'
-        reservations:
-          cpus: '1'
-          memory: '2G'
+#      resources:
+#        limits:
+#          cpus: '2'
+#          memory: '4G'
+#        reservations:
+#          cpus: '0.5'
+#          memory: '1G'
       placement:
         constraints: [node.labels.elk == true]
       restart_policy:
@@ -61,48 +102,21 @@ services:
 #      timeout: 10s
 #      retries: 3
 #      start_period: 40s
-    depends_on:
-      - elastic-master
-    command: ingest
+#    depends_on:
+#      - elastic-master
     environment:
-      NODE_TYPE: 'ingest'
+      CLUSTER_NAME: 'integration'
+      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
+      ES_HEAP_SIZE: '2g'
+      MAX_LOCKED_MEMORY: 'unlimited'
+    volumes:
+      - client1:/usr/share/elasticsearch/data
     networks:
       elk-cluster:
       lb_multi-host-network:
 
-  ###########################
-  # ELASTICSEARCH DATA NODE #
-  ###########################
-
-  elastic-data:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.1-1.0
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.labels.elk == true]
-      restart_policy:
-        delay: 10s
-        max_attempts: 10
-        window: 60s
-    command: data
-    environment:
-      ES_JAVA_OPTS: '-Xms2g -Xmx2g'
-      ES_HEAP_SIZE: 2g
-      NODE_TYPE: 'data'
-    volumes:
-      - data:/usr/share/elasticsearch/data
-    depends_on:
-      - elastic-master
-    networks:
-      elk-cluster:
-
-  ###############
-  # KIBANA NODE #
-  ###############
   kibana:
-    image: registry.ciklum.net/elk/kibana:6.2.1-0.2
-    ports:
-      - 5601:5601
+    image: registry.ciklum.net/elk/kibana:6.2.3
     deploy:
       replicas: 1
       placement:
@@ -122,12 +136,24 @@ services:
       elk-cluster:
 
 volumes:
-  data:
+  client1:
     driver: local
     driver_opts:
       type: "nfs"
       o: addr=172.28.27.15,nolock,soft,rw
-      device: ":/shared/elk_data"
+      device: ":/shared/app/elk/client/1"
+  master:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: addr=172.28.27.15,nolock,soft,rw
+      device: ":/shared/app/elk/master"
+  data1:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: addr=172.28.27.15,nolock,soft,rw
+      device: ":/shared/app/elk/data/1"
 
 networks:
   elk-cluster:

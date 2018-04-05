@@ -47,11 +47,11 @@ RUN apk add --no-cache -t .build-deps wget ca-certificates gnupg openssl \
   chown -R elasticsearch:elasticsearch "$path"; \
   done \
   && rm -rf /tmp/* \
-  && apk del --purge .build-deps
+  && apk del --purge .build-deps \
+  && export ES_JAVA_OPTS='-Xms2g -Xmx2g'
 
 COPY config/elastic /usr/share/elasticsearch/config
 COPY config/logrotate /etc/logrotate.d/elasticsearch
-COPY elastic-entrypoint.sh /
 COPY docker-entrypoint.sh /
 COPY docker-healthcheck /usr/local/bin/
 

@@ -1,75 +1,110 @@
-version: "2"
+version: "3.5"
 
 services:
   #############################
   # ELASTICSEARCH MASTER NODE #
   #############################
-  master:
-    restart: unless-stopped
+  elastic-master:
     image: blacktop/elasticsearch
     command: master
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    cap_add:
-      - IPC_LOCK
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+#        order: start-first
+      resources:
+        limits:
+          cpus: '2'
+          memory: '4G'
+        reservations:
+          cpus: '0.5'
+          memory: '1G'
+      placement:
+        constraints: [node.labels.elk == true]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 10
+        window: 60s
     volumes:
       - data:/usr/share/elasticsearch/data
     networks:
-      - elastic
+      elk-cluster:
+
   ####################################
   # ELASTICSEARCH CLIENT/INGEST NODE #
   ####################################
-  client:
-    restart: unless-stopped
+  elasticsearch:
     image: blacktop/elasticsearch:kopf
     command: client
-    ports:
-      - "9200:9200"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    cap_add:
-      - IPC_LOCK
-    links:
-     - master:elastic-master
+    depends_on:
+     - elastic-master
+    deploy:
+      replicas: 1
+      labels:
+        traefik.port: 9200
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:elastic.int.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
+      update_config:
+        parallelism: 2
+        delay: 10s
+#        order: stop-first
+      resources:
+        limits:
+          cpus: '2'
+          memory: '4G'
+        reservations:
+          cpus: '0.5'
+          memory: '1G'
+      placement:
+        constraints: [node.labels.elk == true]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 10
+        window: 60s
     networks:
-      - elastic
+      elk-cluster: 
+
   ###########################
   # ELASTICSEARCH DATA NODE #
   ###########################
   data:
-    restart: unless-stopped
     image: blacktop/elasticsearch
     environment:
-      - ES_JAVA_OPTS=-Xms2g -Xmx2g
-    mem_limit: 4g
-    memswap_limit: 4g
-    # mem_swappiness: 0
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    cap_add:
-      - IPC_LOCK
+      ES_JAVA_OPTS: '-Xms2g -Xmx2g'
     command: data
-    links:
-     - master:elastic-master
+    depends_on:
+     - elastic-master
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+#        order: start-first
+      resources:
+        limits:
+          cpus: '2'
+          memory: '4G'
+        reservations:
+          cpus: '0.5'
+          memory: '1G'
+      placement:
+        constraints: [node.labels.elk == true]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+
     volumes:
       - data:/usr/share/elasticsearch/data
     networks:
-      - elastic
+      elk-cluster:
+
   ###############
   # KIBANA NODE #
   ###############
@@ -77,10 +112,26 @@ services:
     image: kibana
     ports:
       - "5601:5601"
-    links:
-     - client:elasticsearch
+    depends_on:
+     - elasticsearch
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.labels.elk == true]
+      restart_policy:
+        delay: 10s
+        max_attempts: 10
+        window: 60s
+      labels:
+        traefik.port: 5601
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:kibana.int.pa.pp.ciklum.com"
+        traefik.backend.loadbalancer.swarm: 'true'
     networks:
-      - elastic
+#      lb_multi-host-network:
+      elk-cluster:
+
 #############################
 # ELASTICSEARCH DATA VOLUME #
 #############################
@@ -90,5 +141,6 @@ volumes:
 # ELASTICSEARCH BRIDGE NETWORK #
 ################################
 networks:
-  elastic:
-    driver: bridge
+  elk-cluster:
+    driver: overlay
+
