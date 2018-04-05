@@ -1,0 +1,97 @@
+version: '2'
+volumes:
+  grafana-data:
+    external: true
+    driver: local
+  prometheus-data:
+    external: true
+    driver: local
+services:
+  mysqld-exporter:
+    image: prom/mysqld-exporter
+    environment:
+      DATA_SOURCE_NAME: root:archi_supper2016#@tcp(percona.performance:3306)/performance
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: traefik_lb=true
+  node-exporter:
+    image: prom/node-exporter:latest
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.scheduler.global: 'true'
+  prom-conf:
+    image: infinityworks/prom-conf:20
+    network_mode: none
+    volumes:
+    - /etc/prom-conf/
+    tty: true
+    links:
+    - node-exporter:node-exporter
+    - prometheus-rancher-exporter:prometheus-rancher-exporter
+    - cadvisor:cadvisor
+  grafana:
+    image: grafana/grafana:5.0.0
+    tty: true
+    links:
+    - prometheus-rancher-exporter:prometheus-rancher-exporter
+    - prometheus:prometheus
+    volumes_from:
+    - graf-db
+    ports:
+    - 3000:3000
+    labels:
+      io.rancher.sidekicks: graf-db
+  prometheus-rancher-exporter:
+    image: infinityworks/prometheus-rancher-exporter:v0.22.52
+    tty: true
+    labels:
+      io.rancher.container.agent.role: environment
+      io.rancher.container.create_agent: 'true'
+  cadvisor:
+    image: google/cadvisor:latest
+    stdin_open: true
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    tty: true
+    labels:
+      io.rancher.scheduler.global: 'true'
+  prometheus:
+    image: prom/prometheus:v2.1.0
+    volumes:
+    - prometheus-data:/prometheus
+    tty: true
+    extra_hosts:
+    - rancher-server:0.0.0.0
+    links:
+    - node-exporter:node-exporter
+    - prometheus-rancher-exporter:prometheus-rancher-exporter
+    - cadvisor:cadvisor
+    volumes_from:
+    - prom-conf
+    ports:
+    - 9090:9090
+    command:
+    - --config.file=/etc/prom-conf/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    labels:
+      io.rancher.sidekicks: prom-conf
+  graf-db:
+    image: infinityworks/graf-db:11
+    network_mode: none
+    volumes:
+    - grafana-data:/var/lib/grafana/
+    tty: true
+    links:
+    - prometheus-rancher-exporter:prometheus-rancher-exporter
+    - prometheus:prometheus
+    command:
+    - cat
+
