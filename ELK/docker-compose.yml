@@ -32,8 +32,7 @@ services:
     volumes:
       - master:/usr/share/elasticsearch/data
     networks:
-#      elk-cluster:
-      lb_multi-host-network:
+      elk-cluster:
 
   elastic-data:
     image: registry.ciklum.net/elk/elasticsearch:6.2.3
@@ -66,8 +65,7 @@ services:
     volumes:
       - data1:/usr/share/elasticsearch/data
     networks:
-#      elk-cluster:
-      lb_multi-host-network:
+      elk-cluster:
 
   elasticsearch:
     image: registry.ciklum.net/elk/elasticsearch:6.2.3
@@ -114,7 +112,7 @@ services:
     volumes:
       - client1:/usr/share/elasticsearch/data
     networks:
-#      elk-cluster:
+      elk-cluster:
       lb_multi-host-network:
 
   kibana:
@@ -135,7 +133,7 @@ services:
         traefik.backend.loadbalancer.swarm: 'true'
     networks:
       lb_multi-host-network:
-#      elk-cluster:
+      elk-cluster:
 
 volumes:
   client1:
@@ -158,8 +156,8 @@ volumes:
       device: ":/shared/app/elk/data/1"
 
 networks:
-#  elk-cluster:
-#    driver: overlay
+  elk-cluster:
+    driver: overlay
   lb_multi-host-network:
     external: true
 
