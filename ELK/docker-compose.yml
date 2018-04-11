@@ -1,78 +1,11 @@
 version: "3.5"
 
 services:
-  elastic-master:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.3
-    hostname: elastic-master
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 2
-        delay: 10s
-#        order: start-first
-#      resources:
-#        limits:
-#          cpus: '2'
-#          memory: '4G'
-#        reservations:
-#          cpus: '0.5'
-#          memory: '1G'
-      placement:
-        constraints: [node.labels.elk == true]
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 10
-        window: 60s
-    environment:
-      CLUSTER_NAME: 'integration'
-      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
-      ES_HEAP_SIZE: '2g'
-      MAX_LOCKED_MEMORY: 'unlimited'
-    volumes:
-      - master:/usr/share/elasticsearch/data
-    networks:
-#      elk-cluster:
-      lb_multi-host-network:
-
-  elastic-data:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.3
-    hostname: elastic-data
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 2
-        delay: 10s
-#        order: start-first
-#      resources:
-#        limits:
-#          cpus: '2'
-#          memory: '4G'
-#        reservations:
-#          cpus: '0.5'
-#          memory: '1G'
-      placement:
-        constraints: [node.labels.elk == true]
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 10
-        window: 60s
-    environment:
-      CLUSTER_NAME: 'integration'
-      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
-      ES_HEAP_SIZE: '2g'
-      MAX_LOCKED_MEMORY: 'unlimited'
-    volumes:
-      - data1:/usr/share/elasticsearch/data
-    networks:
-#      elk-cluster:
-      lb_multi-host-network:
-
   elasticsearch:
-    image: registry.ciklum.net/elk/elasticsearch:6.2.3
+    image: registry.ciklum.net/elk/elasticsearch-single:6.2.3
     hostname: elasticsearch
     deploy:
+      mode: global
       replicas: 1
       labels:
         traefik.port: 9200
@@ -112,7 +45,7 @@ services:
       ES_HEAP_SIZE: '2g'
       MAX_LOCKED_MEMORY: 'unlimited'
     volumes:
-      - client1:/usr/share/elasticsearch/data
+      - /usr/share/elasticsearch/data
     networks:
 #      elk-cluster:
       lb_multi-host-network:
@@ -144,18 +77,6 @@ volumes:
       type: "nfs"
       o: addr=172.28.27.15,nolock,soft,rw
       device: ":/shared/app/elk/client/1"
-  master:
-    driver: local
-    driver_opts:
-      type: "nfs"
-      o: addr=172.28.27.15,nolock,soft,rw
-      device: ":/shared/app/elk/master"
-  data1:
-    driver: local
-    driver_opts:
-      type: "nfs"
-      o: addr=172.28.27.15,nolock,soft,rw
-      device: ":/shared/app/elk/data/1"
 
 networks:
 #  elk-cluster:
