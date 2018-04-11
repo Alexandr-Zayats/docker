@@ -5,7 +5,7 @@ set -e
 export BASE='/usr/share/elasticsearch'
 CONFIG=${BASE}/config/elasticsearch.yml
 
-sed -ri "s!^(\#\s*)?(cluster\.name:).*!\2 ${CLUSTER_NAME}!" $CONFIG
+sed -ri "s!^(\#\s*)?(cluster\.name:).*!\2 ${cluster.name}!" $CONFIG
 
 for path in \
   /usr/share/elasticsearch/data \

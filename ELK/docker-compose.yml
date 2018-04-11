@@ -6,7 +6,7 @@ services:
     hostname: elasticsearch
     deploy:
       mode: global
-      replicas: 1
+#      replicas: 1
       labels:
         traefik.port: 9200
         traefik.enable: 'true'
@@ -40,12 +40,12 @@ services:
 #    depends_on:
 #      - elastic-master
     environment:
-      CLUSTER_NAME: 'integration'
+      cluster.name: 'integration'
       ES_JAVA_OPTS: '-Xms512m -Xmx512m'
       ES_HEAP_SIZE: '2g'
       MAX_LOCKED_MEMORY: 'unlimited'
     volumes:
-      - /usr/share/elasticsearch/data
+      - elasticsearch:/usr/share/elasticsearch/data
     networks:
 #      elk-cluster:
       lb_multi-host-network:
@@ -71,12 +71,12 @@ services:
 #      elk-cluster:
 
 volumes:
-  client1:
+  elasticsearch:
     driver: local
-    driver_opts:
-      type: "nfs"
-      o: addr=172.28.27.15,nolock,soft,rw
-      device: ":/shared/app/elk/client/1"
+#    driver_opts:
+#      type: "nfs"
+#      o: addr=172.28.27.15,nolock,soft,rw
+#      device: ":/shared/app/elk/client/1"
 
 networks:
 #  elk-cluster:
