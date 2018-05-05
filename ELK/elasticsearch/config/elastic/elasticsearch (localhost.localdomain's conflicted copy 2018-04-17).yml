@@ -12,3 +12,4 @@ network.host: 0.0.0.0
 #node.master: false
 #node.ingest: false
 #node.data: false
+

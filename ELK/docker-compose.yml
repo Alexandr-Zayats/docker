@@ -2,11 +2,9 @@ version: "3.5"
 
 services:
   elasticsearch:
-    image: registry.ciklum.net/elk/elasticsearch-single:6.2.3
-    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.3
     deploy:
       mode: global
-#      replicas: 1
       labels:
         traefik.port: 9200
         traefik.enable: 'true'
@@ -16,14 +14,14 @@ services:
       update_config:
         parallelism: 2
         delay: 10s
-#        order: stop-first
-#      resources:
-#        limits:
-#          cpus: '2'
-#          memory: '4G'
-#        reservations:
-#          cpus: '0.5'
-#          memory: '1G'
+        order: stop-first
+      resources:
+        limits:
+          cpus: '2'
+          memory: '4G'
+        reservations:
+          cpus: '0.5'
+          memory: '1G'
       placement:
         constraints: [node.labels.elk == true]
       restart_policy:
@@ -40,9 +38,9 @@ services:
 #    depends_on:
 #      - elastic-master
     environment:
-      CLUSTER_NAME: 'integration'
-      ES_JAVA_OPTS: '-Xms512m -Xmx512m'
-      ES_HEAP_SIZE: '2g'
+      cluster.name: docker-cluster
+      ES_JAVA_OPTS: '-Xms2g -Xmx2g'
+      discovery.zen.ping.unicast.hosts: elasticsearch
       MAX_LOCKED_MEMORY: 'unlimited'
     volumes:
       - elasticsearch:/usr/share/elasticsearch/data
