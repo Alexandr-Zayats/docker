@@ -1,0 +1,61 @@
+version: '3.4'
+
+services:
+
+  mysql:
+    image: mariadb:10.3
+    restart: always
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [node.role == worker]
+      labels:
+        traefik.port: 3306
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:mysql.getfree.bet"
+        traefik.backend.loadbalancer.swarm: 'true'
+    volumes:
+      - type: volume
+        source: mysql
+        target: /var/lib/mysql
+        volume:
+          nocopy: true
+
+    environment:
+      MYSQL_ROOT_PASSWORD: "LUaAyCaI06K4h06E"
+
+    networks:
+      lb_multi-host-network:
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints: [node.role == worker]
+      labels:
+        traefik.port: 80
+        traefik.enable: 'true'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:phpadmin.getfree.bet"
+        traefik.backend.loadbalancer.swarm: 'true'
+    environment:
+      PMA_ARBITRARY: 1 
+    networks:
+      lb_multi-host-network:
+
+volumes:
+  mysql:
+    driver: rexrayefs
+    driver_opts:
+      size: 1
+
+networks:
+  lb_multi-host-network:
+    external: true
+
