@@ -4,7 +4,6 @@ services:
 
   mysql:
     image: mariadb:10.3
-    restart: always
     deploy:
       update_config:
         parallelism: 1

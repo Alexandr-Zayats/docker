@@ -1,0 +1,50 @@
+version: '3.5'
+
+services:
+
+  nginx:
+    image: 651586878262.dkr.ecr.eu-central-1.amazonaws.com/nginx:cdn
+
+    volumes:
+    - type: volume
+      source: images
+      target: /var/www/affiliates/public/images
+      volume:
+        nocopy: true
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == worker]
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 20
+        window: 300s
+      update_config:
+        parallelism: 1
+        delay: 15s
+        order: stop-first
+      labels:
+        traefik.port: '80'
+        traefik.enable: 'true'
+        traefik.protocol: 'http'
+        traefik.docker.network: 'lb_multi-host-network'
+        traefik.frontend.rule: "Host:cdn.getfree.bet"
+        traefik.backend.loadbalancer.swarm: 'true'
+    networks:
+      lb_multi-host-network:
+volumes:
+  images:
+    name: images
+    driver: rexrayefs
+    driver_opts:
+      size: 1
+
+networks:
+  lb_multi-host-network:
+    external: true
+
