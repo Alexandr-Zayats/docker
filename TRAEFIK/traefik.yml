@@ -29,12 +29,13 @@ services:
       - --docker.domain=pp.ciklum.com
 #      - --api
 #      - --docker.endpoint=unix://var/run/docker.sock
-#      - --acme
-#      - --acme.storage=/acme.json
-#      - --acme.email=alzay@ciklum.com
-#      - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
-#      - --acme.ondemand=true
-#      - --acme.entryPoint=https
+      - --acme
+      - --acme.storage=/acme.json
+      - --acme.email=alzay@ciklum.com
+      - --acme.caserver=https://acme-v01.api.letsencrypt.org/directory
+      - --acme.onDemand=true
+      - --acme.entryPoint=https
+      - --acme.httpChallenge.entryPoint=http
       - --entryPoints=Name:http Address::80
       - --entryPoints=Name:https Address::443 TLS
       - --defaultentrypoints=http,https
